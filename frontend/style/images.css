@@ -1,0 +1,50 @@
+/*----IMAGE TEMPLATE + FORMATTING----*/
+
+.image{
+    display: grid;
+    grid-template-columns: 60px auto 60px;
+}
+
+.image_picture{
+    margin: auto;
+    max-height: 500px;
+    max-width: 100%;
+    grid-column: 2;
+    grid-row: 3;
+}
+
+.image_title{
+    font-size:30px;
+    font-weight:bold;
+    text-align: center;
+    margin: auto;
+    padding: 10px 0px 0px 0px;
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.image_author{
+    font-size: 15px;
+    font-style: italic;
+    font-weight:bold;
+    margin: auto;
+    padding: 0px 0px 10px 0px;
+    grid-column: 2;
+    grid-row:2;
+}
+
+#previous_image{
+    grid-column: 1;
+    grid-row: 3;
+}
+
+#delete_image{
+    grid-column: 3;
+    grid-row: 1;
+    background-position:bottom center;
+}
+
+#next_image{
+    grid-column: 3;
+    grid-row:3;
+}

@@ -1,0 +1,79 @@
+/*----FORM TEMPLATE----*/
+
+.complex_form{
+    display: grid;
+    padding:20px 10px 10px 10px;
+}
+
+.complex_form .form_title{
+    font-size:20px;
+    font-weight:bold;
+    margin:-20px -10px 10px -10px;
+    padding:10px 0px 10px 25px;
+    color:white;
+    background-color: #3C3D3F;
+    border-radius: 7px 7px 0px 0px;
+}
+
+.complex_form .form_element{
+     margin-bottom:10px;
+     font-size: 20px;
+     border-radius:10px;
+     padding:5px 10px 5px 10px;
+}
+
+.show_hide{
+    cursor: pointer;
+    background-size: 30%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/*----IMAGE FORM FORMATTING----*/
+
+#add_image_form{
+    grid-template-columns: auto 30px;
+}
+
+#image_show_hide{
+    grid-column: 2;
+}
+
+#image_form_header{
+    grid-column: 1;
+    grid-row: 1;
+}
+
+#image_form_inputs{
+    display: grid;
+    grid-column: 1 / span 2;
+}
+
+#image_submit{
+    width: 100px;
+    margin-left: auto;
+}
+
+/*----COMMENT FORM FORMATTING----*/
+
+#add_comment_form{
+    border: none;
+    border-radius: 5px;
+    border-bottom: 1px #3C3D3F solid;
+    grid-template-columns: auto 100px;
+}
+
+#comment_form_header, #comment_content{
+    grid-column: 1 / span 2;
+}
+
+#comment_author{
+    grid-column: 1;
+    margin-right: 5px;
+    margin-bottom: 0px;
+ }
+
+#comment_submit{
+    width: 100px;
+    grid-column: 2;
+}

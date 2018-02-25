@@ -1,0 +1,6 @@
+- Sequencer.html inserted into index.html
+- Sequencer is labeled as a grid [column-row]
+- Div for each column
+- div for each box
+
+To convert files to mp3 use http://media.io/
