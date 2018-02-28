@@ -29,51 +29,8 @@
     background-repeat: no-repeat;
 }
 
-/*----IMAGE FORM FORMATTING----*/
-
-#add_image_form{
-    grid-template-columns: auto 30px;
-}
-
-#image_show_hide{
-    grid-column: 2;
-}
-
-#image_form_header{
-    grid-column: 1;
-    grid-row: 1;
-}
-
-#image_form_inputs{
-    display: grid;
-    grid-column: 1 / span 2;
-}
-
-#image_submit{
-    width: 100px;
-    margin-left: auto;
-}
-
-/*----COMMENT FORM FORMATTING----*/
-
-#add_comment_form{
-    border: none;
-    border-radius: 5px;
-    border-bottom: 1px #3C3D3F solid;
-    grid-template-columns: auto 100px;
-}
-
-#comment_form_header, #comment_content{
-    grid-column: 1 / span 2;
-}
-
-#comment_author{
-    grid-column: 1;
-    margin-right: 5px;
-    margin-bottom: 0px;
- }
-
-#comment_submit{
-    width: 100px;
-    grid-column: 2;
+#myModal > div > div > div.modal-body > form > div {
+    position:relative;
+    left:28%;
+    padding: 10px 0px 10px 0px;
 }

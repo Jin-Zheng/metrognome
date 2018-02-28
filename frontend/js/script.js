@@ -1,15 +1,27 @@
 // jshint esversion: 6
 (function(){
     "use strict";
-    if (!api.getCurrentUser()){
-        document.querySelector('#signout_button').style.visibility = 'hidden';
-        document.querySelector('#signin_button').style.visibility = 'visible';
-        document.querySelector('#signin_button').style.position = 'absolute';
-    } else{
-        document.querySelector('#signout_button').style.visibility = 'visible';
-        document.querySelector('#signin_button').style.visibility = 'hidden';
-        document.querySelector('#signout_button').style.position = 'absolute';
-    }
+    window.addEventListener('load', function(){
+
+        if (!api.getCurrentUser()){
+            document.querySelector('#signout_button').style.visibility = 'hidden';
+            document.querySelector('#signin_button').style.visibility = 'visible';
+            document.querySelector('#signin_button').style.position = 'absolute';
+        } else{
+            document.querySelector('#signout_button').style.visibility = 'visible';
+            document.querySelector('#signin_button').style.visibility = 'hidden';
+            document.querySelector('#signout_button').style.position = 'absolute';
+        }
+
+        // Show login modal when clicked.
+        var modal = document.querySelector('#loginButton');
+        if (modal) {
+            modal.addEventListener('click', function() {
+                modal.setAttribute('data-toggle', 'modal');
+                modal.setAttribute('data-target', '#myModal');
+            });
+        }
+    });
     // Extremely useful source
     //https://stackoverflow.com/questions/31060642/preload-multiple-audio-files
     /*var audio;

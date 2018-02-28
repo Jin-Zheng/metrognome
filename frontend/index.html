@@ -19,6 +19,9 @@
 
     <!-- Custom styles for this template -->
     <link href="css/one-page-wonder.min.css" rel="stylesheet">
+    <link href="style/form.css" rel="stylesheet" type="text/css"/>
+
+    <link href="style/modal.css" rel="stylesheet" type="text/css"/>
 
   </head>
 
@@ -37,12 +40,53 @@
               <a class="nav-link" href="/signout/">Log Out</a>
             </li>
             <li class="nav-item" id="signin_button">
-              <a class="nav-link" href="login.html">Log In</a>
+              <a class="nav-link" href="#" id="loginButton">Log In</a>
             </li>
           </ul>
         </div>
       </div>
     </nav>
+
+
+
+    <!-- The Modal taken from https://www.w3schools.com/bootstrap4/tryit.asp?filename=trybs_modal&stacked=h-->
+    <div class="container">
+      <!-- The Modal -->
+      <div class="modal fade" id="myModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <h4 class="modal-title">Log In</h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+              <div class="alert">
+              </div>
+              <!-- Login body -->
+              <form class="complex_form border">
+                <input type="text" name="username" class="form_element" placeholder="Enter a username" required/>
+                <input type="password" name="password" class="form_element" placeholder="Enter a password" required/>
+                <div>
+                  <button id="signin" name="action" class="btn">Sign in</button>
+                  or <button id="signup" name="action" class="btn">Sign up</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
 
     <!--Save here for reference
     <header class="masthead text-center text-white">
@@ -87,6 +131,7 @@
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="js/api.js"></script>
     <script src="js/script.js"></script>
+    <script src="js/login.js"></script>
 
   </body>
 

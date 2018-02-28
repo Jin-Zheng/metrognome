@@ -51,7 +51,7 @@ var isAuthenticated = function(req, res, next) {
 
 //Create
 
-app.post('/signup/', (req, res) => {
+app.post('/signup/', function(req, res, next) {
     var username = req.body.username;
     var password = req.body.password;
 
@@ -63,7 +63,7 @@ app.post('/signup/', (req, res) => {
         var saltedHash = generateHash(password, salt);
         var newUser = {_id: username, saltedHash: saltedHash, salt: salt};
 
-        db.collection('users').insert(newUser, (err, result) => {
+        db.collection('users').insert(newUser, function(err, result){
             if (err) return console.log(err);
             req.session.user = newUser;
             // initialize cookie
@@ -74,7 +74,7 @@ app.post('/signup/', (req, res) => {
             return res.json("user " + username + " signed up");
         });
     });
-})
+});
 
 app.post('/signin/', function (req, res, next) {
     var username = req.body.username;
