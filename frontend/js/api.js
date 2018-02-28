@@ -1,6 +1,6 @@
 var api = (function(){
     function sendFiles(method, url, data, callback){
-         var formdata = new FormData();
+        var formdata = new FormData();
         Object.keys(data).forEach(function(key){
             var value = data[key];
             formdata.append(key, value);
@@ -50,14 +50,26 @@ var api = (function(){
     module.signin = function (username, password, callback){
         send("POST", "/signin/", {username: username, password: password}, callback);
     };
-
     module.signup = function (username, password, callback){
         send("POST", "/signup/", {username: username, password: password}, callback);
     };
+
+    module.upload = function(file, callback){
+        sendFiles('post', '/file/', {'file': file}, callback);
+    };
+
     module.getCurrentUser = function(){
         var l = document.cookie.split("username=");
         if (l.length > 1) return l[1];
         return null;
+    };
+
+    module.getFiles = function(callback){
+        send('get', '/file/', null, callback);
+    };
+
+    module.deleteFile = function(filename, callback){
+        send('delete', '/file/' + filename, null, callback);
     };
 
     return module;
