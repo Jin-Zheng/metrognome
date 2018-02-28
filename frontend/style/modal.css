@@ -1,0 +1,11 @@
+.modal-title {
+    position:relative;
+    left:40%;
+    text-size:32px;
+}
+
+.alert {
+    padding: 0 0 0 0;
+    color: red;
+    font-size: 16px;
+}
