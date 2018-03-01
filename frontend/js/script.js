@@ -13,15 +13,6 @@
             document.querySelector('#signout_button').style.position = 'absolute';
         }
 
-        // Show login modal when clicked.
-        var modal = document.querySelector('#loginButton');
-        if (modal) {
-            modal.addEventListener('click', function() {
-                modal.setAttribute('data-toggle', 'modal');
-                modal.setAttribute('data-target', '#myModal');
-            });
-        }
-
         // Extremely useful source
         //https://stackoverflow.com/questions/31060642/preload-multiple-audio-files
 
@@ -41,25 +32,29 @@
         audioFiles[2].addEventListener('ended', function(){
             audioFiles[0].play();
         });*/
+        var soundTest = document.getElementById('test');
+        if (soundTest) {
+            soundTest.addEventListener('click', function(e){
+                /*// This plays all sounds at once.
+                for (var i in audioFiles) {
+                    audioFiles[i].play();
+                }*/
 
-        document.getElementById('test').addEventListener('click', function(e){
-            /*// This plays all sounds at once.
-            for (var i in audioFiles) {
-                audioFiles[i].play();
-            }*/
-
-            audioFiles[0].play();
-        });
-
-        document.querySelector('#upload_form').addEventListener('submit', function(e){
-            e.preventDefault();
-            var file = document.getElementById('file').files[0];
-            api.upload(file, function(err, file){
-                if (err) return alert(err);
-                console.log("Stored in DB");
+                audioFiles[0].play();
             });
-            document.querySelector('#upload_form').reset();
-        });
+        }
 
+        var uploadSoundForm = document.querySelector('#upload_form');
+        if (uploadSoundForm) {
+            uploadSoundForm.addEventListener('submit', function(e){
+                e.preventDefault();
+                var file = document.getElementById('file').files[0];
+                api.upload(file, function(err, file){
+                    if (err) return alert(err);
+                    console.log("Stored in DB");
+                });
+                document.querySelector('#upload_form').reset();
+            });
+        }
     });
 })();
