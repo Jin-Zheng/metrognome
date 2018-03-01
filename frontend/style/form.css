@@ -29,8 +29,8 @@
     background-repeat: no-repeat;
 }
 
-#myModal > div > div > div.modal-body > form > div {
-    position:relative;
-    left:28%;
-    padding: 10px 0px 10px 0px;
+.alert {
+    padding: 0 0 0 0;
+    color: red;
+    font-size: 16px;
 }
