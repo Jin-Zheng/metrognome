@@ -22,16 +22,6 @@
             });
         }
 
-        /**document.querySelector('#upload_form').addEventListener('submit', function(e){
-            e.preventDefault();
-            var file = document.getElementById('file').files[0];
-            api.upload(file, function(err, file){
-                if (err) return alert(err);
-                console.log("Stored in DB");
-            });
-            document.querySelector('#upload_form').reset();
-        });*/
-
         // Frontend tutorial src: https://github.com/renasboy/simple-audio-sequencer/blob/master/index.html
         // Audio files stored here
         var audioFiles = {
@@ -189,5 +179,17 @@
         initSequencer.drawSequencer();
         initSequencer.drawController();
 
+        /*var uploadSoundForm = document.querySelector('#upload_form');
+        if (uploadSoundForm) {
+            uploadSoundForm.addEventListener('submit', function(e){
+                e.preventDefault();
+                var file = document.getElementById('file').files[0];
+                api.upload(file, function(err, file){
+                    if (err) return alert(err);
+                    console.log("Stored in DB");
+                });
+                document.querySelector('#upload_form').reset();
+            });
+        }*/
     });
 })();
