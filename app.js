@@ -59,6 +59,11 @@ var isAuthenticated = function(req, res, next) {
     next();
 };
 
+app.use(function(req,res,next){
+    var cookies = cookie.parse(req.headers.cookie || '');
+    req.username = (req.session.username)? req.session.username:null;
+})
+
 // Serve frontend
 app.use(express.static('frontend'));
 app.use(bodyParser.json());
@@ -121,7 +126,7 @@ app.post('/signup/', function(req, res, next) {
 
         db.collection('users').insert(newUser, function(err, result){
             if (err) return console.log(err);
-            req.session.user = newUser;
+            req.session.username = newUser;
             // initialize cookie
             res.setHeader('Set-Cookie', cookie.serialize('username', username, {
                   path : '/',
@@ -141,7 +146,8 @@ app.post('/signin/', function (req, res, next) {
         if (!user) return res.status(401).end("access denied");
         if (user.saltedHash !== generateHash(password, user.salt)) return res.status(401).end("access denied");
         // start a session
-        req.session.user = user;
+        //adding ._id because user var is a collection of info, we just want _id from it
+        req.session.username = user._id;
         // initialize cookie
         res.setHeader('Set-Cookie', cookie.serialize('username', username, {
               path : '/',
@@ -150,6 +156,124 @@ app.post('/signin/', function (req, res, next) {
         return res.json("user " + username + " signed in");
     });
 });
+
+//save beat into db 
+app.post('/beat/',isAuthenticated,function(req,res,next){
+    var beatSequence = req.body.beatSequence;
+    var tempo = req.body.tempo;
+    var public = req.body.public;
+    var newBeat = {username:req.session.username,beatSequence:beatSequence,tempo:tempo,public:public,upvotes:0};
+
+    //maybe later on add a check to not allow duplicate beats?
+    db.collection('beats').insert(newBeat, function(err,result){
+        if(err) return res.status(500).end(err);
+        else{
+            return res.json(result);
+        }
+    });
+});
+
+//get beat by id
+app.get('/beat/:id',isAuthenticated,function(req,res,next){
+    db.collection('beats').findOne({_id:req.param.id},function(err,beat){
+        if(err) return res.status(500).end(err);
+        if(beat === null) return res.status(404).end("No beat with that id exists");
+        else{
+            return res.json(beat);
+        }
+    });
+});
+
+//get beat id by owner
+app.get('/beat/private/',isAuthenticated,function(req,res,next){
+    var usersBeats = [];
+    db.collection('beats').find({username:req.session.username,public:false}).exec(function(err,result){
+        if(err) return res.status(500).end(err);
+        if(result === null) return res.status(404).end("No private beats found for user");
+        else{
+            for(var i =0;i<result.length;i++){
+                usersBeats.push(result[i]._id);
+            }
+            return res.json(usersBeats);
+        }
+    });
+});
+
+//get all public beat ids
+app.get('/beat/public/',isAuthenticated,function(req,res,next){
+    var allBeats = [];
+    db.collection('beats').find({public:true}).sort({upvotes:1}).exec(function(err,result){
+        if(err) return res.status(500).end(err);
+        if(result === null) return res.status(404).end("No public beats found");
+        else{
+            for(var i=0;i<result.length;i++){
+                allBeats.push(result[i]._id);
+            }
+            return res.json(allBeats);
+        }
+    });
+});
+
+//delete beat by id
+app.delete('/beat/:id/',isAuthenticated,function(req,res,next){
+    db.collection('beats').findOne({_id:req.params.id},function(err,result){
+        if(err) return res.status(500).end(err);
+        if(result === null) return res.status(404).end("Beat id not found");
+        else{
+            db.collection('beats').remove({_id:result._id}, function(err,num){
+                if(err) return res.status(500).end(err);
+                else{
+                    res.json(result);
+                }
+            });
+        }
+    });
+});
+
+//post a comment
+//might need to add a createdAt field
+app.post('/comment/',isAuthenticated,function(req,res,next){
+    var username = req.session.username;
+    var beatId = req.body.beatId;
+    var content = req.body.content;
+    var comment = {username:username,beatId:beatId,content:content};
+    db.collection('comments').insert(comment,function(err,result){
+        if(err) return res.status(500).end(err);
+        else{
+            return res.json(result);
+        }
+    });
+});
+
+//get comments for given beat id
+//modify later to return based on timestamp
+app.get('/comment/:id/',isAuthenticated,function(req,res,next){
+    var comments = []
+    db.collection('comments').find({beatId:req.params.id}).exec(function(err,result){
+        if(err) return res.status(500).end(err);
+        if(result === null) return res.status(404).end("no comments for this beat found");
+        else{
+            if(!req.query.offset) req.query.offset=0;
+            //return only 10 comments at most;
+            return res.json(result.splice(req.query.offset,req.query.offset+10));
+        }
+    });
+});
+
+app.delete('/comment/:id/',isAuthenticated,function(req,res,next){
+    db.collection('comments').findOne({_id:req.params.id},function(err,result){
+        if(err) return res.status(500).end(err);
+        if(result === null) return res.status(404).end("comment id not found");
+        else{
+            db.collection('comments').remove({_id:result._id}, function(err,num){
+                if(err) return res.status(500).end(err);
+                else{
+                    res.json(result);
+                }
+            })
+        }
+    })
+})
 
 app.get('/signout/', function (req, res, next) {
     req.session.destroy();
