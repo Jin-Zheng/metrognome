@@ -72,5 +72,45 @@ var api = (function(){
         send('delete', '/file/' + filename, null, callback);
     };
 
+    //beat is set to public
+    module.postBeat = function(beatSequence,tempo,callback){
+        send("POST", '/beat/',{beatSequence:beatSequence, tempo:tempo, public:true}, callback);
+    }
+
+    //beat is only viewable to user
+    module.saveBeat = function(beatSequence,tempo,callback){
+        send("POST", '/beat/',{beatSequence:beatSequence, tempo:tempo, public:false}, callback);
+    }
+
+    //get beats by provided id
+    module.getBeat = function(beatId,callback){
+        send("GET","/beat/"+beatId+"/",null,callback);
+    }
+
+    //use for profile page
+    module.getPrivateBeatsId = function(callback){
+        send("GET","/beat/private/",null,callback);
+    }
+
+    //will be used for popular beats page
+    module.getPublicBeatsId = function(callback){
+        send("GET","/beat/public/",null,callback);
+    }
+
+    module.deleteBeat = function(beatId, callback){
+        send("DELETE","/beat/"+beatId+"/", null,callback);
+    }
+
+    module.addComment = function(beatId,content,callback){
+        send("POST", "/comment/", {beatId:beatId,content:content});
+    }
+
+    module.getComment = function(beatId,offset,callback){
+        send("GET","/comment/"+beatId+"/?offset="+offset,null,callback);
+    }
+
+    module.deleteComment = function(commentId, callback){
+        send("DELETE","/comment/"+commentId+"/",null,callback);
+    }
     return module;
 })();
