@@ -36,9 +36,9 @@
 }
 
 .sequencer_step {
+    margin: 1px 1px 1px 1px;
     border: 1px solid;
     width: 5%;
-
 }
 
 .play{

@@ -62,11 +62,13 @@ var isAuthenticated = function(req, res, next) {
 app.use(function(req,res,next){
     var cookies = cookie.parse(req.headers.cookie || '');
     req.username = (req.session.username)? req.session.username:null;
+    next();
 })
 
 // Serve frontend
 app.use(express.static('frontend'));
 app.use(bodyParser.json());
+
 
 // -----------------------HTTP-----------------------------
 

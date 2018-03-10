@@ -54,8 +54,8 @@ var api = (function(){
         send("POST", "/signup/", {username: username, password: password}, callback);
     };
 
-    module.upload = function(file, callback){
-        sendFiles('post', '/file/', {'file': file}, callback);
+    module.upload = function(title, file, callback){
+        sendFiles('post', '/file/', {title, 'file': file}, callback);
     };
 
     module.getCurrentUser = function(){

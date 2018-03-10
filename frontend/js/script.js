@@ -25,12 +25,12 @@
         // Frontend tutorial src: https://github.com/renasboy/simple-audio-sequencer/blob/master/index.html
         // Audio files stored here
         var audioFiles = {
-            s0: new Audio("/file/kick1.mp3"),
-            s1: new Audio("/file/snare.mp3"),
-            s2: new Audio("/file/rimshot.mp3"),
-            s3: new Audio("/file/cl_hihat.mp3"),
-            s4: new Audio("/file/tom1.mp3"),
-            s5: new Audio("/file/crashcym.mp3")
+            s0: [new Audio("/file/kick1.mp3"), 'bass'],
+            s1: [new Audio("/file/snare.mp3"), 'snare'],
+            s2: [new Audio("/file/rimshot.mp3"), 'rim'],
+            s3: [new Audio("/file/cl_hihat.mp3"), 'high hat'],
+            s4: [new Audio("/file/tom1.mp3"), 'tom'],
+            s5: [new Audio("/file/crashcym.mp3"), 'crash']
         };
 
         // Create a sequencer object
@@ -48,9 +48,11 @@
                 // Draw row
                 for (var i in audioFiles){
                     draw += `<div id=${i} class="row">`;
-                    // Draw columns
-                    // audioFile playing
-                    draw += `<div id="filename" class="text-truncate btn col-1">${i}</div>`;
+                    // audioFile playing + controls
+                    draw +=
+                    `<div id="filename" class="text-truncate btn col-2">
+                        ${audioFiles[i][1]}
+                    </div>`;
                     // steps
                     for (var j = 0; j < steps; j++){
                         draw += `<div id=${'step' + j} class="sequencer_step btn"></div>`;
@@ -62,28 +64,28 @@
                 // Add event listeners
                 // Can't loop this because of closure? or something like that
                 document.querySelector('#s0').addEventListener('click', function(){
-                    audioFiles.s0.currentTime = 0;
-                    audioFiles.s0.play();
+                    audioFiles.s0[0].currentTime = 0;
+                    audioFiles.s0[0].play();
                 });
                 document.querySelector('#s1').addEventListener('click', function(){
-                    audioFiles.s1.currentTime = 0;
-                    audioFiles.s1.play();
+                    audioFiles.s1[0].currentTime = 0;
+                    audioFiles.s1[0].play();
                 });
                 document.querySelector('#s2').addEventListener('click', function(){
-                    audioFiles.s2.currentTime = 0;
-                    audioFiles.s2.play();
+                    audioFiles.s2[0].currentTime = 0;
+                    audioFiles.s2[0].play();
                 });
                 document.querySelector('#s3').addEventListener('click', function(){
-                    audioFiles.s3.currentTime = 0;
-                    audioFiles.s3.play();
+                    audioFiles.s3[0].currentTime = 0;
+                    audioFiles.s3[0].play();
                 });
                 document.querySelector('#s4').addEventListener('click', function(){
-                    audioFiles.s4.currentTime = 0;
-                    audioFiles.s4.play();
+                    audioFiles.s4[0].currentTime = 0;
+                    audioFiles.s4[0].play();
                 });
                 document.querySelector('#s5').addEventListener('click', function(){
-                    audioFiles.s5.currentTime = 0;
-                    audioFiles.s5.play();
+                    audioFiles.s5[0].currentTime = 0;
+                    audioFiles.s5[0].play();
                 });
                 document.querySelectorAll('.sequencer_step').forEach(function(elmt){
                     elmt.addEventListener('click', function () {
@@ -131,6 +133,8 @@
                       <div id="pause" class="btn btn-dark">pause</div>
                       <div id="reset" class="btn btn-dark">reset</div>
                       <div class="">tempo: <input id="tempo" type="range" min="1" max="300" value="" size="3"></div>
+                      <button type='button' id='upload' class='btn' data-toggle='modal' data-target='#uploadForm'>upload</button>
+                      <div>Volume: <input id="volume" type="range" min="0" max="100" value="100" size="3"></div>
                     </div>
 
                 `;
@@ -170,6 +174,24 @@
                     steps = this.value;
                     self.drawSequencer();
                 });
+
+                document.querySelector('#upload_form').addEventListener('submit', function(e){
+                    e.preventDefault();
+                    var title = document.getElementById('upload_title').value;
+                    var file = document.getElementById('upload_file').files[0];
+                    document.querySelector('#upload_form').reset();
+                    api.upload(title, file, function(err, file){
+                        if (err) return alert(err);
+                        console.log("Stored in DB");
+                       document.querySelector('#upload_close').click();
+                    });
+                });
+
+                document.querySelector('#volume').addEventListener('change', function(){
+                    for (var i in audioFiles){
+                        audioFiles[i][0].volume = parseInt(this.value) / 100;
+                    }
+                });
                 document.querySelector('#tempo').value = tempo;
                 document.querySelector('#steps').value = steps;
             }
@@ -179,17 +201,5 @@
         initSequencer.drawSequencer();
         initSequencer.drawController();
 
-        /*var uploadSoundForm = document.querySelector('#upload_form');
-        if (uploadSoundForm) {
-            uploadSoundForm.addEventListener('submit', function(e){
-                e.preventDefault();
-                var file = document.getElementById('file').files[0];
-                api.upload(file, function(err, file){
-                    if (err) return alert(err);
-                    console.log("Stored in DB");
-                });
-                document.querySelector('#upload_form').reset();
-            });
-        }*/
     });
 })();
