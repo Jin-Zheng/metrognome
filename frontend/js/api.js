@@ -112,5 +112,15 @@ var api = (function(){
     module.deleteComment = function(commentId, callback){
         send("DELETE","/comment/"+commentId+"/",null,callback);
     }
+
+    module.getUserInfo = function(username, callback){
+        send("GET", "/api/info/" + username + "/",null , callback);
+    };
+    module.updateUserInfo = function(userInfo, callback){
+        send("PUT", "/api/info/", userInfo , callback);
+    };
+    module.checkPassword = function(userID, password, callback){
+        send("POST", "/api/passCheck/" + userID + "/", {password:password} , callback);
+    };
     return module;
 })();
