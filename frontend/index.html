@@ -33,6 +33,7 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
+        <button class="navbar-toggler" type="button" data-toggle="modal" data-target="#uploadForm" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">uploadTemp</button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item" id="signout_button">
@@ -155,6 +156,24 @@
             <button type="submit" class="btn btn-primary">Upload</button>
           </div>
           </form>
+        </div>
+      </div>
+    </div>
+
+    <!--Src: https://getbootstrap.com/docs/4.0/components/modal/-->
+    <!-- Modal -->
+    <div class="modal fade" id="fileList" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Choose a sound file</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div id="displayFiles"></div>
+            </div>
         </div>
       </div>
     </div>

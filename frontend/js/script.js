@@ -25,13 +25,42 @@
         // Frontend tutorial src: https://github.com/renasboy/simple-audio-sequencer/blob/master/index.html
         // Audio files stored here
         var audioFiles = {
-            s0: [new Audio("/file/kick1.mp3"), 'bass'],
-            s1: [new Audio("/file/snare.mp3"), 'snare'],
-            s2: [new Audio("/file/rimshot.mp3"), 'rim'],
-            s3: [new Audio("/file/cl_hihat.mp3"), 'high hat'],
-            s4: [new Audio("/file/tom1.mp3"), 'tom'],
-            s5: [new Audio("/file/crashcym.mp3"), 'crash']
+            s0: [new Audio("/file/kick1.mp3"), 'Bass'],
+            s1: [new Audio("/file/snare.mp3"), 'Snare'],
+            s2: [new Audio("/file/rimshot.mp3"), 'Rim'],
+            s3: [new Audio("/file/cl_hihat.mp3"), 'High Hat'],
+            s4: [new Audio("/file/tom1.mp3"), 'Tom'],
+            s5: [new Audio("/file/crashcym.mp3"), 'Crash']
         };
+        var currChange = '';
+
+
+        //src: https://stackoverflow.com/questions/5116929/get-clicked-li-from-ul-onclick
+        function getEventTarget(e) {
+            e = e || window.event;
+            return e.target || e.srcElement;
+        }
+
+        var loadFilePicker = function(){
+            api.getFiles(function(err, files){
+                if (err) return alert(err);
+                var draw = `<ul id="filesList" class="list-group">`;
+                for (var i in files){
+                    draw += `<li id=${files[i].filename} class="list-group-item list-group-item-action" data-dismiss="modal">
+                        ${files[i].metadata.title}
+                    </li>`
+                }
+                draw += `</ul>`;
+                document.querySelector('#displayFiles').innerHTML = draw;
+
+                document.querySelector('#filesList').addEventListener('click', function(e){
+                    var target = getEventTarget(e);
+                    audioFiles[currChange] = [new Audio('file/' + target.id), target.innerHTML]
+                    initSequencer.drawSequencer();
+                });
+            });
+        }
+
 
         // Create a sequencer object
         var Sequencer = function () {
@@ -51,6 +80,7 @@
                     // audioFile playing + controls
                     draw +=
                     `<div id="filename" class="text-truncate btn col-2">
+                        <div type="button" class="btn change" id=${i + "change"} data-toggle="modal" data-target="#fileList">Change</div>
                         ${audioFiles[i][1]}
                     </div>`;
                     // steps
@@ -63,6 +93,7 @@
 
                 // Add event listeners
                 // Can't loop this because of closure? or something like that
+
                 document.querySelector('#s0').addEventListener('click', function(){
                     audioFiles.s0[0].currentTime = 0;
                     audioFiles.s0[0].play();
@@ -87,6 +118,12 @@
                     audioFiles.s5[0].currentTime = 0;
                     audioFiles.s5[0].play();
                 });
+                document.querySelectorAll('.change').forEach(function(elmt){
+                    elmt.addEventListener('click', function(){
+                        currChange = elmt.id.split('change')[0];
+                        loadFilePicker();
+                    })
+                })
                 document.querySelectorAll('.sequencer_step').forEach(function(elmt){
                     elmt.addEventListener('click', function () {
                         this.classList.toggle('play');
