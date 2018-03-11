@@ -59,11 +59,13 @@ var isAuthenticated = function(req, res, next) {
     next();
 };
 
+
 app.use(function(req,res,next){
     var cookies = cookie.parse(req.headers.cookie || '');
     req.username = (req.session.username)? req.session.username:null;
     next();
 })
+
 
 // Serve frontend
 app.use(express.static('frontend'));
@@ -114,6 +116,51 @@ app.delete('/file/:filename', function(req, res, next){
 
 // users collection
 
+// Get user information
+app.get('/api/info/:username', function(req, res, next){
+    db.collection('users').findOne({_id: req.params.username}, function(err, user){
+        if (err) return res.status(500).end(err);
+        if (!user) return res.status(404).end("User #" + req.params.username + " does not exists");
+        return res.json(user);
+    });
+})
+
+// Update user info
+app.put('/api/info/', function(req, res, next){
+    var user = req.body;
+    if(user.password) {
+        var salt = crypto.randomBytes(16).toString('base64');
+        var saltedHash = generateHash(user.password, salt);
+        delete user['password'];
+        user.salt = salt;
+        user.saltedHash = saltedHash;
+    }
+    db.collection('users').findOne({_id: user._id}, function(err, found){
+        if (err) return res.status(500).end(err);
+        if (!found) return res.status(404).end("User #" + user._id + " does not exists");
+        db.collection('users').update({_id: user._id}, {$set: user} , function(err, result){
+            if (err) return res.status(500).end(err);
+            return res.json(result);
+        });
+    });
+})
+
+// Check whether password is equal to user password
+app.post('/api/passCheck/:username', function(req, res, next){
+    var password = req.body.password;
+    db.collection('users').findOne({_id: req.params.username}, function(err, user){
+        if (err) return res.status(500).end(err);
+        if (!user) return res.status(404).end("User #" + req.params.username + " does not exists");
+        var salt = user.salt;
+        var currSaltedHash = user.saltedHash;
+        var saltedHash = generateHash(password, salt);
+        if (saltedHash === currSaltedHash)
+            return res.json(true);
+        else
+            return res.json(false);
+    });
+})
+
 app.post('/signup/', function(req, res, next) {
     var username = req.body.username;
     var password = req.body.password;
@@ -124,7 +171,14 @@ app.post('/signup/', function(req, res, next) {
 
         var salt = crypto.randomBytes(16).toString('base64');
         var saltedHash = generateHash(password, salt);
-        var newUser = {_id: username, saltedHash: saltedHash, salt: salt};
+        var newUser = {
+            _id: username,
+            firstName: '',
+            lastName: '',
+            email: '',
+            saltedHash: saltedHash,
+            salt: salt
+        };
 
         db.collection('users').insert(newUser, function(err, result){
             if (err) return console.log(err);

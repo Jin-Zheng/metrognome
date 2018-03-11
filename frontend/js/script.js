@@ -4,13 +4,14 @@
     window.addEventListener('load', function(){
 
         if (!api.getCurrentUser()){
-            document.querySelector('#signout_button').style.visibility = 'hidden';
-            document.querySelector('#signin_button').style.visibility = 'visible';
-            document.querySelector('#signin_button').style.position = 'absolute';
+            document.querySelector('#signout_button').classList.add("invisible");
+            document.querySelector('#profileLink').classList.add("invisible");
+            document.querySelector('#signin_button').classList.remove("invisible");
+
         } else{
-            document.querySelector('#signout_button').style.visibility = 'visible';
-            document.querySelector('#signin_button').style.visibility = 'hidden';
-            document.querySelector('#signout_button').style.position = 'absolute';
+            document.querySelector('#signout_button').classList.remove("invisible");
+            document.querySelector('#profileLink').classList.remove("invisible");
+            document.querySelector('#signin_button').classList.add("invisible");
         }
 
         // Show login modal when clicked.
