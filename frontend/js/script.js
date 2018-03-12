@@ -14,17 +14,9 @@
             document.querySelector('#signin_button').classList.add("invisible");
         }
 
-        // Show login modal when clicked.
-        var modal = document.querySelector('#loginButton');
-        if (modal) {
-            modal.addEventListener('click', function() {
-                modal.setAttribute('data-toggle', 'modal');
-                modal.setAttribute('data-target', '#myModal');
-            });
-        }
 
         // Frontend tutorial src: https://github.com/renasboy/simple-audio-sequencer/blob/master/index.html
-        // Audio files stored here
+        // Audio Files storage and default files
         var audioFiles = {
             s0: [new Audio("/file/kick1.mp3"), 'Bass'],
             s1: [new Audio("/file/snare.mp3"), 'Snare'],
@@ -33,6 +25,7 @@
             s4: [new Audio("/file/tom1.mp3"), 'Tom'],
             s5: [new Audio("/file/crashcym.mp3"), 'Crash']
         };
+        // Key of the audioFile which is being changed.
         var currChange = '';
 
 
@@ -42,6 +35,7 @@
             return e.target || e.srcElement;
         }
 
+        //Load the content of modal #choose_file
         var loadFilePicker = function(){
             api.getFiles(function(err, files){
                 if (err) return alert(err);
@@ -81,7 +75,7 @@
                     // audioFile playing + controls
                     draw +=
                     `<div id="filename" class="text-truncate btn col-2">
-                        <div type="button" class="btn change" id=${i + "change"} data-toggle="modal" data-target="#fileList">Change</div>
+                        <div type="button" class="btn change" id=${i + "change"} data-toggle="modal" data-target="#choose_file">Change</div>
                         ${audioFiles[i][1]}
                     </div>`;
                     // steps
@@ -171,7 +165,7 @@
                       <div id="pause" class="btn btn-dark">pause</div>
                       <div id="reset" class="btn btn-dark">reset</div>
                       <div class="">tempo: <input id="tempo" type="range" min="1" max="300" value="" size="3"></div>
-                      <button type='button' id='upload' class='btn' data-toggle='modal' data-target='#uploadForm'>upload</button>
+                      <button type='button' id='upload' class='btn' data-toggle='modal' data-target='#upload_modal'>upload</button>
                       <div>Volume: <input id="volume" type="range" min="0" max="100" value="100" size="3"></div>
                     </div>
 
@@ -221,7 +215,7 @@
                     api.upload(title, file, function(err, file){
                         if (err) return alert(err);
                         console.log("Stored in DB");
-                       document.querySelector('#upload_close').click();
+                        document.querySelector('#upload_close').click();
                     });
                 });
 
@@ -235,6 +229,7 @@
             }
         }
 
+// ----------INIT----------
         var initSequencer = new Sequencer();
         initSequencer.drawSequencer();
         initSequencer.drawController();
