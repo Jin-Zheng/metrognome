@@ -39,8 +39,8 @@
                 email : $scope.email
             };
             // If user want's to change password check if the old password is correct
-            if ($scope.pass1 !== '' && $scope.oldPass !== '' && $scope.pass1 && $scope.oldPass) {
-                api.checkPassword($scope._id, $scope.oldPass, function(err, correctPass){
+            if ($scope.pass1 !== '' && $scope.oldpass !== '' && $scope.pass1 && $scope.oldpass) {
+                api.checkPassword($scope._id, $scope.oldpass, function(err, correctPass){
                     // Update if user has entered the correct password
                     if(correctPass) {
                         user.password = $scope.pass1;
@@ -81,8 +81,16 @@
     app.directive("passCheck", function() {
         function linkFunction(scope, elem, attr, ctrl) {
             // Watch pass1 and pass2 and check when they change
-            scope.$watchGroup(['pass1', 'pass2'], function(newValues, oldValues, scope) {
+            scope.$watchGroup(['pass1', 'pass2','oldpass'], function(newValues, oldValues, scope) {
                 ctrl.$setValidity("same", newValues[0] === newValues[1]);
+                var bothNull = (newValues[0] == null && newValues[2] == null);
+                var bothEmpty = (newValues[0] === '' && newValues[2] === '');
+                var bothHaveValues = (newValues[0] !== '' && newValues[2] != null) && (newValues[0] !== '' && newValues[2] !== '');
+                console.log(bothNull);
+                console.log(bothEmpty);
+                console.log(bothHaveValues);
+                console.log((bothNull || bothEmpty) || bothHaveValues);
+                ctrl.$setValidity("empty", ((bothNull || bothEmpty) || bothHaveValues));
             });
         }
         return {

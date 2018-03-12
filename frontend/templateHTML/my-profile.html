@@ -9,11 +9,11 @@
     <p class="text-danger" ng-show="myForm.email.$error.email">Invalid email address.</p>
 
     <h6>Set new password</h6>
-    <p> Old password : <input type="password" ng-model="oldPass"  placeholder="Enter old password"></p>
+    <p> Old password : <input type="password" ng-model="oldpass" name="oldpass" id="oldpass" placeholder="Enter old password"></p>
+    <p class='text-danger' ng-show='myForm.pass2.$error.empty'>Please enter old password</p>
     <p class='text-danger' ng-show='wrongPass'>Wrong old Password</p>
     <p> New password : <input type="password" ng-model="pass1" name="pass1" id="pass1" placeholder="Enter new password"></p>
-    <p> Confirm new password : <input pass-check="pass1" type="password" ng-model="pass2"name="pass2" id="pass2" placeholder="Confirm new password"></p>
+    <p> Confirm new password : <input pass-check="pass1 oldpass" type="password" ng-model="pass2"name="pass2" id="pass2" placeholder="Confirm new password"></p>
     <p class='text-danger' ng-show='myForm.pass2.$error.same'>Passwords do not match</p>
-
-    <button id="changeProfile" type="submit" class="btn btn-success" ng-disabled="myForm.email.$error.email || myForm.pass2.$error.same">Submit</button>
+   <button id="changeProfile" type="submit" class="btn btn-success" ng-disabled="myForm.email.$error.email || myForm.pass2.$error.same || myForm.pass2.$error.empty">Submit</button>
 </form>

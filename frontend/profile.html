@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Template</title>
+    <title>Profile</title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -20,6 +20,8 @@
     <!-- Custom styles for this template -->
     <link href="css/one-page-wonder.min.css" rel="stylesheet">
     <link href="style/form.css" rel="stylesheet" type="text/css"/>
+    <link href="style/profile.css" rel="stylesheet" type="text/css"/>
+
     <link rel="shortcut icon" href="">
 
 </head>
@@ -94,11 +96,11 @@
             <div class="col-lg-6 order-lg-1">
                 <div class="p-5">
                     <h2 class="display-4">Profile</h2>
-                    <body ng-app="profileApp" ng-controller="profileCtrl">
+                    <body ng-cloack ng-app="profileApp" ng-controller="profileCtrl">
                     <!-- Create directive -->
                     <div profile-directive ng-show="showProfile" ng-model="profileModel"></div>
-                    <div ng-show="showSuccessfulUpdate">Your profile has been successfully updated!</div>
-                    <div ng-show="notLoggedInProfile">Please log in to view your profile!</div>
+                    <div ng-cloak ng-show="showSuccessfulUpdate">Your profile has been successfully updated!</div>
+                    <div ng-cloak ng-show="notLoggedInProfile">Please log in to view your profile!</div>
                     </body>
                 </div>
             </div>
