@@ -10,7 +10,7 @@
                 var password =document.querySelector("form [name=password]").value;
                 var action =document.querySelector("form [name=action]").value;
                 api[action](username, password, function(err, res){
-                    if (err) document.querySelector('.alert').innerHTML = err;
+                    if (err) document.querySelector('.alert').innerHTML = "Access denied: Wrong username or password";
                     else if(window.location.protocol + window.location.host + "/" + "profile.html" === window.location.href)
                         window.location = window.location.href;
                     else window.location = '';
