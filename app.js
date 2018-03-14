@@ -118,7 +118,7 @@ app.delete('/file/:filename', function(req, res, next){
 // ################################# USERS ##################################
 
 // Get user information
-app.get('/api/info/:username', function(req, res, next){
+app.get('/users/info/:username', function(req, res, next){
     db.collection('users').findOne({_id: req.params.username}, function(err, user){
         if (err) return res.status(500).end(err);
         if (!user) return res.status(404).end("User #" + req.params.username + " does not exists");
@@ -127,7 +127,7 @@ app.get('/api/info/:username', function(req, res, next){
 })
 
 // Update user info
-app.put('/api/info/', function(req, res, next){
+app.put('/users/info/', function(req, res, next){
     var user = req.body;
     if(user.password) {
         var salt = crypto.randomBytes(16).toString('base64');
@@ -141,13 +141,13 @@ app.put('/api/info/', function(req, res, next){
         if (!found) return res.status(404).end("User #" + user._id + " does not exists");
         db.collection('users').update({_id: user._id}, {$set: user} , function(err, result){
             if (err) return res.status(500).end(err);
-            return res.json(result);
+            return res.json("User has been updated");
         });
     });
 })
 
 // Check whether password is equal to user password
-app.post('/api/passCheck/:username', function(req, res, next){
+app.post('/users/passCheck/:username', function(req, res, next){
     var password = req.body.password;
     db.collection('users').findOne({_id: req.params.username}, function(err, user){
         if (err) return res.status(500).end(err);

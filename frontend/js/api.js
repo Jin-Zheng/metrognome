@@ -75,13 +75,13 @@ var api = (function(){
         return null;
     };
     module.getUserInfo = function(username, callback){
-        send("GET", "/api/info/" + username + "/",null , callback);
+        send("GET", "/users/info/" + username + "/",null , callback);
     };
     module.updateUserInfo = function(userInfo, callback){
-        send("PUT", "/api/info/", userInfo , callback);
+        send("PUT", "/users/info/", userInfo , callback);
     };
     module.checkPassword = function(userID, password, callback){
-        send("POST", "/api/passCheck/" + userID + "/", {password:password} , callback);
+        send("POST", "/users/passCheck/" + userID + "/", {password:password} , callback);
     };
 
 // ################################# BEATS ##################################
