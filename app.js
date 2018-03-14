@@ -62,7 +62,7 @@ var isAuthenticated = function(req, res, next) {
 
 app.use(function(req,res,next){
     var cookies = cookie.parse(req.headers.cookie || '');
-    req.username = (req.session.username)? req.session.username:null;
+    req.username = (req.session.username)? req.session.username:cookies.username;
     next();
 })
 
@@ -230,7 +230,9 @@ app.post('/beat/',isAuthenticated,function(req,res,next){
     var beatSequence = req.body.beatSequence;
     var tempo = req.body.tempo;
     var public = req.body.public;
-    var newBeat = {username:req.session.username,beatSequence:beatSequence,tempo:tempo,public:public,upvotes:0, dateCreated: new Date()};
+    var title = req.body.title;
+    var desc = req.body.desc;
+    var newBeat = {username:req.username, title, desc, beatSequence, tempo, public, upvotes:0, dateCreated: new Date()};
 
     //maybe later on add a check to not allow duplicate beats?
     db.collection('beats').insert(newBeat, function(err,result){

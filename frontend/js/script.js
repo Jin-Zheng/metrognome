@@ -62,6 +62,7 @@
             var looping = false;
             var beat = 0;
             var tempo = 100;
+            var volume = 100;
             var steps = 16;
 
             // Draw the main sequencer element
@@ -117,7 +118,7 @@
                     elmt.addEventListener('click', function(){
                         currChange = elmt.id.split('change')[0];
                         loadFilePicker();
-                    })
+                    });
                 })
                 document.querySelectorAll('.sequencer_step').forEach(function(elmt){
                     elmt.addEventListener('click', function () {
@@ -166,14 +167,31 @@
                       <div id="play" class="btn btn-dark">play</div>
                       <div id="pause" class="btn btn-dark">pause</div>
                       <div id="reset" class="btn btn-dark">reset</div>
-                      <div class="">tempo: <input id="tempo" type="range" min="1" max="300" value="" size="3"></div>
-                      <button type='button' id='upload' class='btn' data-toggle='modal' data-target='#upload_modal'>upload</button>
-                      <div>Volume: <input id="volume" type="range" min="0" max="100" value="100" size="3"></div>
-                      <button type='button' id='save' class='btn'>Save</button>
-                      <button type='button' id='post' class='btn'>Post</button>
-                    </div>
+                      <div>
+                        <input id="tempo" class="slider" type="range" min="1" max="300" value="" size="3">
+                        <p>Tempo: <span id="tempo_val">${tempo}</span></p>
+                      </div>
+                      <div>
+                          <input id="volume" class="slider" type="range" min="0" max="100" value="100" size="3">
+                          <p>Volume: <span id="volume_val">${volume}</span></p>
+                      </div>`
 
-                `;
+                      if (api.getCurrentUser() !== null && api.getCurrentUser() !== ''){
+                          draw +=`
+                              <button type="button" id="upload" class="btn" data-toggle="modal" data-target="#upload_modal">upload</button>
+                              <button type="button" id="save" class="btn" data-toggle="collapse" data-target="#save_form">Save</button>
+                              <div id="save_form" class="collapse">
+                                  <form class="complex_form border">
+                                      <input type="text" id="beat_title" class="form_element" placeholder="Title" required/>
+                                      <input type="text" id="beat_description" class="form_element" placeholder="Description"/>
+                                      <div class="row justify-content-center">
+                                          <button id="beat_submit" type="submit" class="btn">Submit</button>
+                                      </div>
+                                  </form>
+                              </div>
+                         `
+                      }
+                    draw += `</div>`;
                 controller.innerHTML = draw;
 
 
@@ -197,10 +215,9 @@
                 document.querySelector('#rewind').addEventListener('click', function () {
                     beat = 0;
                 })
-                document.querySelector('#tempo').addEventListener('change', function () {
-                    if (this.value > 1 && this.value < 300) {
-                        tempo = this.value;
-                    }
+                document.querySelector('#tempo').addEventListener('input', function(){
+                    document.querySelector('#tempo_val').innerHTML = this.value;
+                    tempo = this.value;
                     if (looping) {
                         clearInterval(looping);
                         looping = setInterval(self.step, 60000 / tempo / 4);
@@ -210,34 +227,35 @@
                     steps = this.value;
                     self.drawSequencer();
                 });
-                document.querySelector('#upload_form').addEventListener('submit', function(e){
-                    e.preventDefault();
-                    var title = document.getElementById('upload_title').value;
-                    var file = document.getElementById('upload_file').files[0];
-                    document.querySelector('#upload_form').reset();
-                    api.upload(title, file, function(err, file){
-                        if (err) return alert(err);
-                        console.log("Stored in DB");
-                        document.querySelector('#upload_close').click();
-                    });
-                });
-                document.querySelector('#volume').addEventListener('change', function(){
+                document.querySelector('#volume').addEventListener('input', function(){
+                    document.querySelector('#volume_val').innerHTML = this.value;
+                    volume = this.value;
                     for (var i in audioFiles){
-                        audioFiles[i][0].volume = parseInt(this.value) / 100;
+                        audioFiles[i][0].volume = parseInt(volume) / 100;
                     }
                 });
-                document.querySelector('#save').addEventListener('click', function(){
-                    api.saveBeat(sequencerState, tempo, function(err, beat){
-                        if (err) return alert(err);
-                        alert('saved!')
+                if (api.getCurrentUser() !== null && api.getCurrentUser() !== ''){
+                    document.querySelector('#upload_form').addEventListener('submit', function(e){
+                        e.preventDefault();
+                        var title = document.getElementById('upload_title').value;
+                        var file = document.getElementById('upload_file').files[0];
+                        document.querySelector('#upload_form').reset();
+                        api.upload(title, file, function(err, file){
+                            if (err) return alert(err);
+                            console.log("Stored in DB");
+                            document.querySelector('#upload_close').click();
+                        });
                     });
-                });
-                document.querySelector('#post').addEventListener('click', function(){
-                    api.postBeat(sequencerState, tempo, function(err, beat){
-                        if (err) return alert(err);
-                        alert('posted!')
+                    document.querySelector('#save_form').addEventListener('submit', function(e){
+                        e.preventDefault();
+                        var title = document.querySelector('#beat_title').value;
+                        var desc = document.querySelector('#beat_description').value;
+                        api.saveBeat(sequencerState, tempo, title, desc, function(err, beat){
+                            if (err) return alert(err);
+                            alert('saved!')
+                        });
                     });
-                });
+                }
                 document.querySelector('#tempo').value = tempo;
                 document.querySelector('#steps').value = steps;
             }

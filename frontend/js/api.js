@@ -91,8 +91,8 @@ var api = (function(){
     }
 
     //beat is only viewable to user
-    module.saveBeat = function(beatSequence,tempo,callback){
-        send("POST", '/beat/',{beatSequence:beatSequence, tempo:tempo, public:false}, callback);
+    module.saveBeat = function(beatSequence, tempo, title, desc, callback){
+        send("POST", '/beat/',{beatSequence, tempo, title, desc, public:false}, callback);
     }
 
     //get beats by provided id
