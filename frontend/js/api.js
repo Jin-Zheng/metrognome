@@ -47,23 +47,8 @@ var api = (function(){
 
     var module = {};
 
-    module.signin = function (username, password, callback){
-        send("POST", "/signin/", {username: username, password: password}, callback);
-    };
-    module.signup = function (username, password, callback){
-        send("POST", "/signup/", {username: username, password: password}, callback);
-    };
 
-    module.upload = function(title, file, callback){
-        sendFiles('post', '/file/', {title, 'file': file}, callback);
-    };
-
-    module.getCurrentUser = function(){
-        var l = document.cookie.split("username=");
-        if (l.length > 1) return l[1];
-        return null;
-    };
-
+// ################################# FILES ##################################
     module.getFiles = function(callback){
         send('get', '/file/', null, callback);
     };
@@ -72,6 +57,34 @@ var api = (function(){
         send('delete', '/file/' + filename, null, callback);
     };
 
+    module.upload = function(title, file, callback){
+        sendFiles('post', '/file/', {title, 'file': file, 'username':getCookie('username')}, callback);
+    };
+
+// ################################# USERS ##################################
+    module.signin = function (username, password, callback){
+        send("POST", "/signin/", {username: username, password: password}, callback);
+    };
+    module.signup = function (username, password, callback){
+        send("POST", "/signup/", {username: username, password: password}, callback);
+    };
+
+    module.getCurrentUser = function(){
+        var l = document.cookie.split("username=");
+        if (l.length > 1) return l[1];
+        return null;
+    };
+    module.getUserInfo = function(username, callback){
+        send("GET", "/api/info/" + username + "/",null , callback);
+    };
+    module.updateUserInfo = function(userInfo, callback){
+        send("PUT", "/api/info/", userInfo , callback);
+    };
+    module.checkPassword = function(userID, password, callback){
+        send("POST", "/api/passCheck/" + userID + "/", {password:password} , callback);
+    };
+
+// ################################# BEATS ##################################
     //beat is set to public
     module.postBeat = function(beatSequence,tempo,callback){
         send("POST", '/beat/',{beatSequence:beatSequence, tempo:tempo, public:true}, callback);
@@ -87,11 +100,6 @@ var api = (function(){
         send("GET","/beat/"+beatId+"/",null,callback);
     }
 
-    //use for profile page
-    module.getPrivateBeatsId = function(callback){
-        send("GET","/beat/private/",null,callback);
-    }
-
     //will be used for popular beats page
     module.getPublicBeatsId = function(callback){
         send("GET","/beat/public/",null,callback);
@@ -101,6 +109,13 @@ var api = (function(){
         send("DELETE","/beat/"+beatId+"/", null,callback);
     }
 
+// ################################# PROFILE ##################################
+    //use for profile page
+    module.getPrivateBeatsId = function(callback){
+        send("GET","/beat/private/",null,callback);
+    }
+
+// ################################# COMMENTS ##################################
     module.addComment = function(beatId,content,callback){
         send("POST", "/comment/", {beatId:beatId,content:content});
     }
@@ -112,15 +127,5 @@ var api = (function(){
     module.deleteComment = function(commentId, callback){
         send("DELETE","/comment/"+commentId+"/",null,callback);
     }
-
-    module.getUserInfo = function(username, callback){
-        send("GET", "/api/info/" + username + "/",null , callback);
-    };
-    module.updateUserInfo = function(userInfo, callback){
-        send("PUT", "/api/info/", userInfo , callback);
-    };
-    module.checkPassword = function(userID, password, callback){
-        send("POST", "/api/passCheck/" + userID + "/", {password:password} , callback);
-    };
     return module;
 })();

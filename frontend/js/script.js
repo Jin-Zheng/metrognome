@@ -2,7 +2,6 @@
 (function(){
     "use strict";
     window.addEventListener('load', function(){
-
         if (!api.getCurrentUser()){
             document.querySelector('#signout_button').classList.add("invisible");
             document.querySelector('#profileLink').classList.add("invisible");
@@ -14,7 +13,7 @@
             document.querySelector('#signin_button').classList.add("invisible");
         }
 
-
+        var sequencerState = {}; // {audioFileName: [audioFile, [steps]}
         // Frontend tutorial src: https://github.com/renasboy/simple-audio-sequencer/blob/master/index.html
         // Audio Files storage and default files
         var audioFiles = {
@@ -71,6 +70,7 @@
                 var draw = '';
                 // Draw row
                 for (var i in audioFiles){
+                    sequencerState[i] = [audioFiles[i], []];
                     draw += `<div id=${i} class="row">`;
                     // audioFile playing + controls
                     draw +=
@@ -81,6 +81,7 @@
                     // steps
                     for (var j = 0; j < steps; j++){
                         draw += `<div id=${'step' + j} class="sequencer_step btn"></div>`;
+                        sequencerState[i][1].push(false);
                     }
                     draw += '</div>';
                     sequencer.innerHTML = draw;
@@ -88,7 +89,6 @@
 
                 // Add event listeners
                 // Can't loop this because of closure? or something like that
-
                 document.querySelector('#s0').addEventListener('click', function(){
                     audioFiles.s0[0].currentTime = 0;
                     audioFiles.s0[0].play();
@@ -121,6 +121,7 @@
                 })
                 document.querySelectorAll('.sequencer_step').forEach(function(elmt){
                     elmt.addEventListener('click', function () {
+                        sequencerState[elmt.parentNode.id][1][elmt.id.split('step')[1]] = true;
                         this.classList.toggle('play');
                     });
                 });
@@ -129,6 +130,7 @@
             // Reset the sequencer
             this.reset = function(){
                 document.querySelectorAll('.play').forEach(function (elmt) {
+                    sequencerState[elmt.parentNode.id][1][elmt.id.split('step')[1]] = false;
                     elmt.classList.remove('play');
                 });
             }
@@ -167,6 +169,8 @@
                       <div class="">tempo: <input id="tempo" type="range" min="1" max="300" value="" size="3"></div>
                       <button type='button' id='upload' class='btn' data-toggle='modal' data-target='#upload_modal'>upload</button>
                       <div>Volume: <input id="volume" type="range" min="0" max="100" value="100" size="3"></div>
+                      <button type='button' id='save' class='btn'>Save</button>
+                      <button type='button' id='post' class='btn'>Post</button>
                     </div>
 
                 `;
@@ -206,7 +210,6 @@
                     steps = this.value;
                     self.drawSequencer();
                 });
-
                 document.querySelector('#upload_form').addEventListener('submit', function(e){
                     e.preventDefault();
                     var title = document.getElementById('upload_title').value;
@@ -218,11 +221,22 @@
                         document.querySelector('#upload_close').click();
                     });
                 });
-
                 document.querySelector('#volume').addEventListener('change', function(){
                     for (var i in audioFiles){
                         audioFiles[i][0].volume = parseInt(this.value) / 100;
                     }
+                });
+                document.querySelector('#save').addEventListener('click', function(){
+                    api.saveBeat(sequencerState, tempo, function(err, beat){
+                        if (err) return alert(err);
+                        alert('saved!')
+                    });
+                });
+                document.querySelector('#post').addEventListener('click', function(){
+                    api.postBeat(sequencerState, tempo, function(err, beat){
+                        if (err) return alert(err);
+                        alert('posted!')
+                    });
                 });
                 document.querySelector('#tempo').value = tempo;
                 document.querySelector('#steps').value = steps;
@@ -233,6 +247,5 @@
         var initSequencer = new Sequencer();
         initSequencer.drawSequencer();
         initSequencer.drawController();
-
     });
 })();

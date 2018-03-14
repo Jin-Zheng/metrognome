@@ -74,6 +74,7 @@ app.use(bodyParser.json());
 
 // -----------------------HTTP-----------------------------
 
+// ################################# FILES ##################################
 app.post('/file/', upload.single('file'), function(req, res, next){
     return res.json("Success");
 });
@@ -114,7 +115,7 @@ app.delete('/file/:filename', function(req, res, next){
     });
 })
 
-// users collection
+// ################################# USERS ##################################
 
 // Get user information
 app.get('/api/info/:username', function(req, res, next){
@@ -213,12 +214,23 @@ app.post('/signin/', function (req, res, next) {
     });
 });
 
-//save beat into db 
+app.get('/signout/', function (req, res, next) {
+    req.session.destroy();
+    res.setHeader('Set-Cookie', cookie.serialize('username', '', {
+          path : '/',
+          maxAge: 60 * 60 * 24 * 7 // 1 week in number of seconds
+    }));
+    res.redirect('/');
+});
+
+// ################################# BEATS ##################################
+
+//save beat into db
 app.post('/beat/',isAuthenticated,function(req,res,next){
     var beatSequence = req.body.beatSequence;
     var tempo = req.body.tempo;
     var public = req.body.public;
-    var newBeat = {username:req.session.username,beatSequence:beatSequence,tempo:tempo,public:public,upvotes:0};
+    var newBeat = {username:req.session.username,beatSequence:beatSequence,tempo:tempo,public:public,upvotes:0, dateCreated: new Date()};
 
     //maybe later on add a check to not allow duplicate beats?
     db.collection('beats').insert(newBeat, function(err,result){
@@ -286,6 +298,8 @@ app.delete('/beat/:id/',isAuthenticated,function(req,res,next){
     });
 });
 
+// ################################# COMMENTS ##################################
+
 //post a comment
 //might need to add a createdAt field
 app.post('/comment/',isAuthenticated,function(req,res,next){
@@ -330,15 +344,6 @@ app.delete('/comment/:id/',isAuthenticated,function(req,res,next){
         }
     })
 })
-
-app.get('/signout/', function (req, res, next) {
-    req.session.destroy();
-    res.setHeader('Set-Cookie', cookie.serialize('username', '', {
-          path : '/',
-          maxAge: 60 * 60 * 24 * 7 // 1 week in number of seconds
-    }));
-    res.redirect('/');
-});
 
 app.get('/', (req, res) => {
   var cursor = db.collection('users').find();
