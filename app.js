@@ -361,7 +361,7 @@ app.use(function (req, res, next){
 const http = require('http');
 const PORT = process.env.PORT || 3000;
 
-app.use(enforce.HTTPS({ trustXForwardedHostHeader: true }));
+app.use(enforce.HTTPS({ trustProtoHeader: true }));
 
 http.createServer(app).listen(PORT, function (err) {
     if (err) console.log(err);
