@@ -71,6 +71,10 @@ app.use(function(req,res,next){
 app.use(express.static('frontend'));
 app.use(bodyParser.json());
 
+// ACME Challenge for cert
+app.get('/.well-known/acme-challenge/AoF7f_IZqmMuihQT8g50mli0sgbiuH0f665RMh5dxew', function(req, res) {
+  res.send('AoF7f_IZqmMuihQT8g50mli0sgbiuH0f665RMh5dxew.5NtdGmtdnlj26UILfKCIYI0NkedTh4K1blzcCLLYNMA')
+})
 
 // -----------------------HTTP-----------------------------
 
