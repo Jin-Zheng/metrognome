@@ -4,7 +4,6 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const enforce = require('express-sslify');
 
 const cookie = require('cookie');
 const crypto = require('crypto');
@@ -361,8 +360,15 @@ app.use(function (req, res, next){
 const http = require('http');
 const PORT = process.env.PORT || 3000;
 
-app.use(enforce.HTTPS({ trustProtoHeader: true }));
-
+app.use(function (req, res, next) {
+    if (req.headers['x-forwarded-proto'] != 'https' && process.env.NODE_ENV === 'production') {
+        console.log("HTTP request forwarded");
+        return res.redirect(301, 'https://' + req.headers.host + req.url);
+    } else {
+          console.log("HTTPS request");
+          return next();
+    }
+});
 http.createServer(app).listen(PORT, function (err) {
     if (err) console.log(err);
     else console.log("HTTP server on http://localhost:%s", PORT);
