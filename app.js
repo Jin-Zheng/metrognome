@@ -4,7 +4,6 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const fs = require('fs');
 
 const cookie = require('cookie');
 const crypto = require('crypto');
@@ -72,10 +71,6 @@ app.use(function(req,res,next){
 app.use(express.static('frontend'));
 app.use(bodyParser.json());
 
-// ACME Challenge for cert
-app.get('/.well-known/acme-challenge/AoF7f_IZqmMuihQT8g50mli0sgbiuH0f665RMh5dxew', function(req, res) {
-  res.send('AoF7f_IZqmMuihQT8g50mli0sgbiuH0f665RMh5dxew.5NtdGmtdnlj26UILfKCIYI0NkedTh4K1blzcCLLYNMA')
-})
 
 // -----------------------HTTP-----------------------------
 
@@ -364,19 +359,14 @@ app.use(function (req, res, next){
 
 const http = require('http');
 const PORT = process.env.PORT || 3000;
-/**
-var privateKey = fs.readFileSync( 'privkey.pem' );
-var certificate = fs.readFileSync( 'fullchain.pem' );
-var config = {
-        key: privateKey,
-        cert: certificate
-};
 
-https.createServer(config, app).listen(PORT, function (err) {
-    if (err) console.log(err);
-    else console.log("HTTPS server on https://localhost:%s", PORT);
+app.use(function(req, res, next) {
+    if (req.secure){
+        return next();
+    }
+    res.redirect("https://" + req.headers.host + req.url);
 });
-*/
+
 http.createServer(app).listen(PORT, function (err) {
     if (err) console.log(err);
     else console.log("HTTP server on http://localhost:%s", PORT);
