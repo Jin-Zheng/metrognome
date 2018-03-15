@@ -360,14 +360,14 @@ app.use(function (req, res, next){
 const http = require('http');
 const PORT = process.env.PORT || 3000;
 
-app.use((req, res, next) => {
+app.use(function (req, res, next) {
+    console.log('https://' + req.headers.host + req.url);
   if (req.header('x-forwarded-proto') !== 'https') {
-    res.redirect(`https://${req.header('host')}${req.url}`)
+    res.redirect('https://' + req.headers.host + req.url);
   } else {
     next();
   }
 });
-app.use(express.static('build'));
 
 http.createServer(app).listen(PORT, function (err) {
     if (err) console.log(err);
