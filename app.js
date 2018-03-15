@@ -371,6 +371,5 @@ app.use(function (req, res, next) {
 http.createServer(app).listen(PORT, function (err) {
     if (err) console.log(err);
     else console.log("HTTP server on http://localhost:%s", PORT);
-    console.log(process.env.NODE_ENV);
 });
 
