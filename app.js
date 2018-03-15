@@ -4,6 +4,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const fs = require('fs');
 
 const cookie = require('cookie');
 const crypto = require('crypto');
@@ -361,10 +362,16 @@ app.use(function (req, res, next){
 });
 
 
-const http = require('http');
+const https = require('https');
 const PORT = process.env.PORT || 3000;
+var privateKey = fs.readFileSync( 'privkey.pem' );
+var certificate = fs.readFileSync( 'fullchain.pem' );
+var config = {
+        key: privateKey,
+        cert: certificate
+};
 
-http.createServer(app).listen(PORT, function (err) {
+https.createServer(config, app).listen(PORT, function (err) {
     if (err) console.log(err);
-    else console.log("HTTP server on http://localhost:%s", PORT);
+    else console.log("HTTPS server on https://localhost:%s", PORT);
 });
