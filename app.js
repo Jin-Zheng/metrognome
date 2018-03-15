@@ -362,8 +362,9 @@ app.use(function (req, res, next){
 });
 
 
-const https = require('https');
+const http = require('http');
 const PORT = process.env.PORT || 3000;
+/**
 var privateKey = fs.readFileSync( 'privkey.pem' );
 var certificate = fs.readFileSync( 'fullchain.pem' );
 var config = {
@@ -374,4 +375,9 @@ var config = {
 https.createServer(config, app).listen(PORT, function (err) {
     if (err) console.log(err);
     else console.log("HTTPS server on https://localhost:%s", PORT);
+});
+*/
+http.createServer(app).listen(PORT, function (err) {
+    if (err) console.log(err);
+    else console.log("HTTP server on http://localhost:%s", PORT);
 });
