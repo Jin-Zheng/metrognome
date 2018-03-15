@@ -366,5 +366,6 @@ app.use(enforce.HTTPS({ trustProtoHeader: true }));
 http.createServer(app).listen(PORT, function (err) {
     if (err) console.log(err);
     else console.log("HTTP server on http://localhost:%s", PORT);
+    console.log("App port" + app.get('port'));
 });
 
