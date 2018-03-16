@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const cookie = require('cookie');
 const crypto = require('crypto');
 const session = require('express-session');
+const validator = require('validator');
 
 const mongo = require('mongodb');
 const MongoClient = require('mongodb').MongoClient;
@@ -58,6 +59,21 @@ var isAuthenticated = function(req, res, next) {
     if (!req.username) return res.status(401).end("access denied");
     next();
 };
+
+var checkUsername = function(req,res,next){
+    if(!validator.isAlphanumeric(req.body.username)) return res.status(400).end("bad input");
+    next();
+}
+
+var sanitizeContent = function(req,res,next){
+    req.body.content = validator.escape(req.body.content);
+    next();
+}
+
+var checkId = function(req,res,next){
+    if(!validator.isAlphanumeric(req.params.id)) return res.status(400).end("bad id");
+    next();
+}
 
 
 app.use(function(req,res,next){
@@ -118,7 +134,7 @@ app.delete('/file/:filename', function(req, res, next){
 // ################################# USERS ##################################
 
 // Get user information
-app.get('/users/info/:username', function(req, res, next){
+app.get('/users/info/:username',checkUsername, function(req, res, next){
     db.collection('users').findOne({_id: req.params.username}, function(err, user){
         if (err) return res.status(500).end(err);
         if (!user) return res.status(404).end("User #" + req.params.username + " does not exists");
@@ -147,7 +163,7 @@ app.put('/users/info/', function(req, res, next){
 })
 
 // Check whether password is equal to user password
-app.post('/users/passCheck/:username', function(req, res, next){
+app.post('/users/passCheck/:username',checkUsername, function(req, res, next){
     var password = req.body.password;
     db.collection('users').findOne({_id: req.params.username}, function(err, user){
         if (err) return res.status(500).end(err);
@@ -162,7 +178,7 @@ app.post('/users/passCheck/:username', function(req, res, next){
     });
 })
 
-app.post('/signup/', function(req, res, next) {
+app.post('/signup/',checkUsername, function(req, res, next) {
     var username = req.body.username;
     var password = req.body.password;
 
@@ -194,7 +210,7 @@ app.post('/signup/', function(req, res, next) {
     });
 });
 
-app.post('/signin/', function (req, res, next) {
+app.post('/signin/', checkUsername,function (req, res, next) {
     var username = req.body.username;
     var password = req.body.password;
     // retrieve user from the database
@@ -244,7 +260,7 @@ app.post('/beat/',isAuthenticated,function(req,res,next){
 });
 
 //get beat by id
-app.get('/beat/:id',isAuthenticated,function(req,res,next){
+app.get('/beat/:id',checkId,isAuthenticated,function(req,res,next){
     db.collection('beats').findOne({_id:req.param.id},function(err,beat){
         if(err) return res.status(500).end(err);
         if(beat === null) return res.status(404).end("No beat with that id exists");
@@ -285,7 +301,7 @@ app.get('/beat/public/',isAuthenticated,function(req,res,next){
 });
 
 //delete beat by id
-app.delete('/beat/:id/',isAuthenticated,function(req,res,next){
+app.delete('/beat/:id/',checkId,isAuthenticated,function(req,res,next){
     db.collection('beats').findOne({_id:req.params.id},function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("Beat id not found");
@@ -304,7 +320,7 @@ app.delete('/beat/:id/',isAuthenticated,function(req,res,next){
 
 //post a comment
 //might need to add a createdAt field
-app.post('/comment/',isAuthenticated,function(req,res,next){
+app.post('/comment/',sanitizeContent,isAuthenticated,function(req,res,next){
     var username = req.session.username;
     var beatId = req.body.beatId;
     var content = req.body.content;
@@ -319,7 +335,7 @@ app.post('/comment/',isAuthenticated,function(req,res,next){
 
 //get comments for given beat id
 //modify later to return based on timestamp
-app.get('/comment/:id/',isAuthenticated,function(req,res,next){
+app.get('/comment/:id/',checkId,isAuthenticated,function(req,res,next){
     var comments = []
     db.collection('comments').find({beatId:req.params.id}).exec(function(err,result){
         if(err) return res.status(500).end(err);
@@ -332,7 +348,7 @@ app.get('/comment/:id/',isAuthenticated,function(req,res,next){
     });
 });
 
-app.delete('/comment/:id/',isAuthenticated,function(req,res,next){
+app.delete('/comment/:id/',checkId,isAuthenticated,function(req,res,next){
     db.collection('comments').findOne({_id:req.params.id},function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("comment id not found");
