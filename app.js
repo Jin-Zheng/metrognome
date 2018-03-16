@@ -2,6 +2,8 @@
 
 // Imports
 const express = require('express');
+const favicon = require('serve-favicon');
+const path = require('path');
 const app = express();
 const bodyParser = require('body-parser');
 
@@ -372,7 +374,10 @@ app.get('/', (req, res) => {
 
 app.use(function (req, res, next){
     console.log("HTTP Response", res.statusCode);
+    next();
 });
+
+app.use(favicon(path.join(__dirname, '/frontend/media/', 'favicon.ico')));
 
 
 const http = require('http');
