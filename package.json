@@ -12,7 +12,7 @@
     "template"
   ],
   "scripts": {
-     "start": "node app.js"
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,7 @@
     "bootstrap": "4.0.0",
     "express": "^4.16.2",
     "express-session": "^1.15.6",
+    "express-sslify": "^1.2.0",
     "gridfs-stream": "^1.1.1",
     "jquery": "3.3.1",
     "mongodb": "^3.0.2",

@@ -17,19 +17,24 @@
             document.querySelector('#signout_button').style.position = 'absolute';
         }
         // Get the user information to populate profile page
-        api.getUserInfo(api.getCurrentUser(), function(err, user){
-            if (err) console.log(err);
-            //Update scope with user information
-            $scope.$apply(function(){
-                $scope._id = user._id;
-                $scope.email = (user.email) ? user.email : '';
-                $scope.firstName = (user.firstName) ? user.firstName : '';
-                $scope.lastName = (user.lastName) ? user.lastName : '';
-                $scope.emailPlaceholder = (user.email) ? user.email : 'Enter email here';
-                $scope.firstNamePlaceholder = (user.firstName) ? user.firstName : 'Enter first name here';
-                $scope.lastNamePlaceholder = (user.lastName) ? user.lastName : 'Enter last name here';
+        // Only run if there is a user logged in
+        if (api.getCurrentUser()) {
+            api.getUserInfo(api.getCurrentUser(), function(err, user){
+                if (err) console.log(err);
+                //Update scope with user information
+                if(user) {
+                    $scope.$apply(function(){
+                        $scope._id = user._id;
+                        $scope.email = (user.email) ? user.email : '';
+                        $scope.firstName = (user.firstName) ? user.firstName : '';
+                        $scope.lastName = (user.lastName) ? user.lastName : '';
+                        $scope.emailPlaceholder = (user.email) ? user.email : 'Enter email here';
+                        $scope.firstNamePlaceholder = (user.firstName) ? user.firstName : 'Enter first name here';
+                        $scope.lastNamePlaceholder = (user.lastName) ? user.lastName : 'Enter last name here';
+                    });
+                }
             });
-        });
+        }
         // When the user hit's submit, check form and update
         $scope.updateInfo = function() {
             var user = {
@@ -86,10 +91,6 @@
                 var bothNull = (newValues[0] == null && newValues[2] == null);
                 var bothEmpty = (newValues[0] === '' && newValues[2] === '');
                 var bothHaveValues = (newValues[0] !== '' && newValues[2] != null) && (newValues[0] !== '' && newValues[2] !== '');
-                console.log(bothNull);
-                console.log(bothEmpty);
-                console.log(bothHaveValues);
-                console.log((bothNull || bothEmpty) || bothHaveValues);
                 ctrl.$setValidity("empty", ((bothNull || bothEmpty) || bothHaveValues));
             });
         }

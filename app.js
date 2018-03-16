@@ -362,7 +362,16 @@ app.use(function (req, res, next){
 const http = require('http');
 const PORT = process.env.PORT || 3000;
 
+app.use(function (req, res, next) {
+    if (req.headers['x-forwarded-proto'] != 'https' && process.env.NODE_ENV === 'production') {
+        return res.redirect(301, 'https://' + req.headers.host + req.url);
+    } else {
+          return next();
+    }
+});
+
 http.createServer(app).listen(PORT, function (err) {
     if (err) console.log(err);
     else console.log("HTTP server on http://localhost:%s", PORT);
 });
+
