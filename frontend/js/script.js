@@ -61,7 +61,7 @@
             var self = this; // This is needed to reference its own functions recursively
             var looping = false;
             var beat = 0;
-            var tempo = 100;
+            var tempo = 120;
             var volume = 100;
             var steps = 16;
 
@@ -75,8 +75,8 @@
                     draw += `<div id=${i} class="row">`;
                     // audioFile playing + controls
                     draw +=
-                    `<div id="filename" class="text-truncate btn col-2">
-                        <div type="button" class="btn change" id=${i + "change"} data-toggle="modal" data-target="#choose_file">Change</div>
+                    `<div id="filename" class="text-truncate btn col-2 text-left">
+                        <button type="button" class="btn btn-light controller btn-change" id=${i + "change"} data-toggle="modal" data-target="#choose_file"></button>
                         ${audioFiles[i][1]}
                     </div>`;
                     // steps
@@ -114,7 +114,7 @@
                     audioFiles.s5[0].currentTime = 0;
                     audioFiles.s5[0].play();
                 });
-                document.querySelectorAll('.change').forEach(function(elmt){
+                document.querySelectorAll('.btn-change').forEach(function(elmt){
                     elmt.addEventListener('click', function(){
                         currChange = elmt.id.split('change')[0];
                         loadFilePicker();
@@ -156,37 +156,31 @@
                 var controller = document.querySelector('#controller');
                 var draw = `
                     <div class="form-inline">
-                      <label for="steps">Steps:</label>
-                      <select id="steps" class="form-control">
-                        <option>4</option>
-                        <option>8</option>
-                        <option>12</option>
-                        <option>16</option>
-                      </select>
-                      <div id="rewind" class="btn btn-dark ">rewind</div>
-                      <div id="play" class="btn btn-dark">play</div>
-                      <div id="pause" class="btn btn-dark">pause</div>
-                      <div id="reset" class="btn btn-dark">reset</div>
+                      <div id="rewind" class="btn btn-light controller btn-rewind p-1"></div>
+                      <div id="playpause" class="btn btn-light controller btn-play p-1"></div>
+                      <div id="reset" class="btn btn-light controller btn-reset p-1"></div>
                       <div>
-                        <input id="tempo" class="slider" type="range" min="1" max="300" value="" size="3">
+                        <input id="tempo" class="slider" type="range" min="5" max="240" value="" step="5">
                         <p>Tempo: <span id="tempo_val">${tempo}</span></p>
                       </div>
                       <div>
-                          <input id="volume" class="slider" type="range" min="0" max="100" value="100" size="3">
+                          <input id="volume" class="slider" type="range" min="0" max="100" value="100">
                           <p>Volume: <span id="volume_val">${volume}</span></p>
                       </div>`
 
                       if (api.getCurrentUser() !== null && api.getCurrentUser() !== ''){
                           draw +=`
-                              <button type="button" id="upload" class="btn" data-toggle="modal" data-target="#upload_modal">upload</button>
-                              <button type="button" id="save" class="btn" data-toggle="collapse" data-target="#save_form">Save</button>
+                              <button type="button" id="upload" class="btn btn-light controller btn-upload p-1" data-toggle="modal" data-target="#upload_modal"></button>
+                              <button type="button" id="save" class="btn btn-light controller btn-save p-1" data-toggle="collapse" data-target="#save_form"></button>
                               <div id="save_form" class="collapse">
-                                  <form class="complex_form border">
-                                      <input type="text" id="beat_title" class="form_element" placeholder="Title" required/>
-                                      <input type="text" id="beat_description" class="form_element" placeholder="Description"/>
+                                  <form>
+                                    <div class="input-group">
+                                      <input type="text" id="beat_title" class="form-control" placeholder="Title" required/>
+                                      <input type="text" id="beat_description" class="form-control" placeholder="Description"/>
                                       <div class="row justify-content-center">
                                           <button id="beat_submit" type="submit" class="btn">Submit</button>
                                       </div>
+                                    </div>
                                   </form>
                               </div>
                          `
@@ -195,16 +189,21 @@
                 controller.innerHTML = draw;
 
 
-                document.querySelector('#play').addEventListener('click', function () {
-                    if (looping) {
-                        return;
+                document.querySelector('#playpause').addEventListener('click', function () {
+                    if (this.classList.contains('btn-play')){
+                        this.classList.toggle('btn-play');
+                        this.classList.toggle('btn-pause');
+                        if (looping) {
+                            return;
+                        }
+                        // tempo calculation found online
+                        looping = setInterval(self.step, 60000 / tempo / 4);
+                    } else{
+                        this.classList.toggle('btn-play');
+                        this.classList.toggle('btn-pause');
+                        clearInterval(looping);
+                        looping = false;
                     }
-                    // tempo calculation found online
-                    looping = setInterval(self.step, 60000 / tempo / 4);
-                })
-                document.querySelector('#pause').addEventListener('click', function () {
-                    clearInterval(looping);
-                    looping = false;
                 })
                 document.querySelector('#reset').addEventListener('click', function () {
                     clearInterval(looping);
@@ -222,10 +221,6 @@
                         clearInterval(looping);
                         looping = setInterval(self.step, 60000 / tempo / 4);
                     }
-                });
-                document.querySelector('#steps').addEventListener('change', function () {
-                    steps = this.value;
-                    self.drawSequencer();
                 });
                 document.querySelector('#volume').addEventListener('input', function(){
                     document.querySelector('#volume_val').innerHTML = this.value;
@@ -256,8 +251,6 @@
                         });
                     });
                 }
-                document.querySelector('#tempo').value = tempo;
-                document.querySelector('#steps').value = steps;
             }
         }
 

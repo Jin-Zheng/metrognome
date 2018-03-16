@@ -1,0 +1,96 @@
+.color-1{/*blackish*/
+    background-color: #040F0F;
+}
+.color-2{/*green*/
+    background-color: #1E662A;
+}
+.color-3{/*light green*/
+    background-color: #279944;
+}
+.color-4{/*grey*/
+    background-color: #2D3A3A;
+}
+.color-5{/*white*/
+    background-color: #FCFFFC;
+}
+
+.sequencer_step {
+    margin: 1px 1px 1px 1px;
+    border: 1px solid;
+    width: 5%;
+}
+
+.play{
+    background-color: #1E662A;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100px;
+    height: 10px;
+    background: #279944;
+    outline: none;
+    opacity: 0.7;
+    border-radius: 10% 10% 10% 10%;
+    -webkit-transition: .2s;
+    transition: opacity .5s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #040F0F;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #040F0F;
+    cursor: pointer;
+}
+
+/*#########################MEDIA BUTTONS##########################*/
+.controller{
+    width: 5%;
+    height: 45px;
+    background-size: 75%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.btn-play {
+    background-image: url("../media/play.png");
+}
+
+.btn-pause {
+    background-image: url("../media/pause.png");
+}
+
+.btn-rewind {
+    background-image: url("../media/rewind.png");
+}
+
+.btn-reset {
+    background-image: url("../media/delete-button.png");
+}
+
+.btn-upload {
+    background-image: url("../media/upload.png");
+}
+
+.btn-save {
+    background-image: url("../media/save.png");
+}
+
+.btn-change {
+    background-image: url("../media/shuffle.png");
+}
