@@ -1,37 +1,74 @@
-.color-1{/*blackish*/
-    background-color: #040F0F;
+.color-1{/*greyish*/
+    background-color: #495867;
 }
-.color-2{/*green*/
-    background-color: #1E662A;
+.color-1-text{/*greyish*/
+    color: #495867;
 }
-.color-3{/*light green*/
-    background-color: #279944;
+.color-2{/*blue*/
+    background-color: #577399;
 }
-.color-4{/*grey*/
-    background-color: #2D3A3A;
+.color-3{/*light blue*/
+    background-color: #BDD5EA;
 }
-.color-5{/*white*/
-    background-color: #FCFFFC;
+.color-4{/*white*/
+    background-color: #F7F7FF;
 }
-
-.sequencer_step {
+.color-5{/*red*/
+    background-color: #FE5F55;
+}
+.sequencer_step-sm{
     margin: 1px 1px 1px 1px;
     border: 1px solid;
-    width: 5%;
+    width: 15%;
+    height: auto;
+}
+.sequencer_step-md{
+    margin: 1px 1px 1px 1px;
+    border: 1px solid;
+    width: 10%;
+    height: auto;
+}
+.sequencer_step-lg{
+    margin: 1px 1px 1px 1px;
+    border: 1px solid;
+    width: 7%;
+    height: auto;
+}
+.sequencer_step-xl{
+    margin: 1px 1px 1px 1px;
+    background-color: #577399;
+    width: 4.75%;
+    height: auto;
 }
 
 .play{
-    background-color: #1E662A;
+    background-color: #495867;
+}
+
+.btn-custom {
+  color: #495867;
+  background-color: #F7F7FF;
+  border-color: #F7F7FF;
+}
+
+.btn-custom:hover {
+  color: #F7F7FF;
+  background-color: #577399;
+  border-color: #577399;
+}
+
+.btn-custom:focus{
+  box-shadow: 0 0 0 0.2rem rgba(248, 249, 250, 0.5);
 }
 
 .slider {
     -webkit-appearance: none;
     width: 100px;
     height: 10px;
-    background: #279944;
+    background: #BDD5EA;
     outline: none;
     opacity: 0.7;
-    border-radius: 10% 10% 10% 10%;
+    border-radius: 5px;
     -webkit-transition: .2s;
     transition: opacity .5s;
 }
@@ -58,63 +95,97 @@
     cursor: pointer;
 }
 
-/*#########################MEDIA BUTTONS##########################*/
 .controller{
-    width: 5%;
-    height: 45px;
-    background-size: 75%;
+    width: 40px;
+    height: 40px;
+    background-size: 50%;
     background-repeat: no-repeat;
     background-position: center;
 }
 
+.change{
+    width: 20px;
+    height: 20px;
+    background-size: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/*#########################MEDIA BUTTONS##########################*/
+
 .btn-play {
     background-image: url("../media/play.png");
 }
-
-.btn-play:focus{
-    background-image: url("../media/delete-button.png");
+.btn-play:hover {
+    background-image: url("../media/play-hover.png");
 }
 
 .btn-pause {
     background-image: url("../media/pause.png");
 }
+.btn-pause:hover {
+    background-image: url("../media/pause-hover.png");
+}
 
 .btn-stop {
     background-image: url("../media/stop.png");
+}
+.btn-stop:hover {
+    background-image: url("../media/stop-hover.png");
 }
 
 .btn-reset {
     background-image: url("../media/delete-button.png");
 }
+.btn-reset:hover {
+    background-image: url("../media/delete-button-hover.png");
+}
 
 .btn-previous {
     background-image: url("../media/previous.png");
+}
+.btn-previous:hover {
+    background-image: url("../media/previous-hover.png");
 }
 
 .btn-upload {
     background-image: url("../media/upload.png");
 }
+.btn-upload:hover {
+    background-image: url("../media/upload-hover.png");
+}
 
 .btn-save {
     background-image: url("../media/save.png");
+}
+.btn-save:hover {
+    background-image: url("../media/save-hover.png");
 }
 
 .btn-change {
     background-image: url("../media/shuffle.png");
 }
+.btn-change:hover {
+    background-image: url("../media/shuffle-hover.png");
+}
 
 .btn-mute{
     background-image: url("../media/mute.png");
+}
+.btn-mute:hover{
+    background-image: url("../media/mute-hover.png");
 }
 
 .btn-volume0{
     background-image: url("../media/volume0.png");
 }
+.btn-volume0:hover{
+    background-image: url("../media/volume0-hover.png");
+}
 
 .btn-volume1{
     background-image: url("../media/volume1.png");
 }
-
-.btn-volume2{
-    background-image: url("../media/volume2.png");
+.btn-volume1:hover{
+    background-image: url("../media/volume1-hover.png");
 }

@@ -25,26 +25,26 @@
 
   </head>
 
-  <body class="color-5">
+  <body class="color-4">
 
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
       <div class="container">
         <a class="navbar-brand" href="/">Metro-Gnome</a>
-        <a class="navbar-nav navbar-text col-9 invisible"></a>
+        <a class="navbar-nav navbar-text col-9 d-none"></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
+            <li class="nav-item" id="signin_button">
+              <a class="nav-link" data-toggle="modal" data-target="#login_modal">Log In</a>
+            </li>
             <li class="nav-item" id="profile_button">
               <a class="nav-link" href="profile.html" id="profileLink">Profile</a>
             </li>
-            <li class="nav-item invisible" id="signout_button">
+            <li class="nav-item d-none" id="signout_button">
               <a class="nav-link" href="/signout/">Log Out</a>
-            </li>
-            <li class="nav-item" id="signin_button">
-              <a class="nav-link" data-toggle="modal" data-target="#login_modal">Log In</a>
             </li>
           </ul>
         </div>
@@ -85,8 +85,7 @@
       </div>
     </div>
 
-    <!--Save here for reference
-    <header class="masthead text-center text-white">
+    <!--<header class="masthead text-center text-white">
       <div class="masthead-content">
         <div class="container">
           <h1 class="masthead-heading mb-0">Template</h1>
@@ -103,10 +102,10 @@
     <!--Sequencer-->
     <div>
       <div class="container mt-5">
-        <div class="row align-items-center">
-          <div class="col-lg-12 p-5">
+        <div class="row align-content-center">
+          <div class="col-12 p-5">
               <div id="sequencer" class="container"></div>
-              <div id="controller" class="mt-2 p-2 border-top container"></div>
+              <div id="controller" class="container mt-2 p-2 border-top"></div>
           </div>
         </div>
       </div>

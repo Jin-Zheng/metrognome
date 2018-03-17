@@ -3,14 +3,14 @@
     "use strict";
     window.addEventListener('load', function(){
         if (!api.getCurrentUser()){
-            document.querySelector('#signout_button').classList.add("invisible");
-            document.querySelector('#profileLink').classList.add("invisible");
-            document.querySelector('#signin_button').classList.remove("invisible");
+            document.querySelector('#signout_button').classList.add("d-none");
+            document.querySelector('#profileLink').classList.add("d-none");
+            document.querySelector('#signin_button').classList.remove("d-none");
 
         } else{
-            document.querySelector('#signout_button').classList.remove("invisible");
-            document.querySelector('#profileLink').classList.remove("invisible");
-            document.querySelector('#signin_button').classList.add("invisible");
+            document.querySelector('#signout_button').classList.remove("d-none");
+            document.querySelector('#profileLink').classList.remove("d-none");
+            document.querySelector('#signin_button').classList.add("d-none");
         }
 
         var sequencerState = {}; // {audioFileName: [audioFile, [steps]}
@@ -58,6 +58,7 @@
 
         // Create a sequencer object
         var Sequencer = function () {
+            var size = 'xl';
             var self = this; // This is needed to reference its own functions recursively
             var looping = false;
             var beat = 0;
@@ -68,20 +69,19 @@
             // Draw the main sequencer element
             this.drawSequencer = function(){
                 var sequencer = document.querySelector('#sequencer');
-                var draw = '';
+                var draw = ``;
                 // Draw row
                 for (var i in audioFiles){
                     sequencerState[i] = [audioFiles[i], []];
-                    draw += `<div id=${i} class="row">`;
+                    draw += `<div id=${i} class="row m-1">`;
                     // audioFile playing + controls
-                    draw +=
-                    `<div id="filename" class="text-truncate btn col-2 text-left">
-                        <button type="button" class="btn btn-light controller btn-change" id=${i + "change"} data-toggle="modal" data-target="#choose_file"></button>
+                    draw +=`<button type="button" class="btn btn-custom change btn-change" id=${i + "change"} data-toggle="modal" data-target="#choose_file"></button>
+                    <div id="filename" class="text-truncate btn btn-custom col-2 text-left mr-2">
                         ${audioFiles[i][1]}
                     </div>`;
                     // steps
                     for (var j = 0; j < steps; j++){
-                        draw += `<div id=${'step' + j} class="sequencer_step btn"></div>`;
+                        draw += `<div id=${'step' + j} class="sequencer_step-xl btn col-auto color-4"></div>`;
                         sequencerState[i][1].push(false);
                     }
                     draw += '</div>';
@@ -120,7 +120,7 @@
                         loadFilePicker();
                     });
                 })
-                document.querySelectorAll('.sequencer_step').forEach(function(elmt){
+                document.querySelectorAll('.sequencer_step-xl').forEach(function(elmt){
                     elmt.addEventListener('click', function () {
                         sequencerState[elmt.parentNode.id][1][elmt.id.split('step')[1]] = true;
                         this.classList.toggle('play');
@@ -138,18 +138,15 @@
 
             this.setVolume = function(volume){
                 var btn = document.querySelector('#volume_button');
-                if(volume >= 67){
-                    btn.classList.add('btn-volume2');
-                    btn.classList.remove('btn-mute', 'btn-volume0', 'btn-volume1');
-                }else if (volume > 33 && volume < 67){
+                if (volume > 50 && volume <= 100){
                     btn.classList.add('btn-volume1');
-                    btn.classList.remove('btn-mute', 'btn-volume0', 'btn-volume2');
-                }else if (volume <= 33 && volume > 0){
+                    btn.classList.remove('btn-mute', 'btn-volume0');
+                }else if (volume <= 50 && volume > 0){
                     btn.classList.add('btn-volume0');
-                    btn.classList.remove('btn-mute', 'btn-volume1', 'btn-volume2');
+                    btn.classList.remove('btn-mute', 'btn-volume1');
                 } else {
                     btn.classList.add('btn-mute');
-                    btn.classList.remove('btn-volume0', 'btn-volume1', 'btn-volume2');
+                    btn.classList.remove('btn-volume0', 'btn-volume1');
                 }
                 for (var i in audioFiles){
                     audioFiles[i][0].volume = parseInt(volume) / 100;
@@ -175,22 +172,20 @@
             this.drawController = function(){
                 var controller = document.querySelector('#controller');
                 var draw = `
-                    <div class="form-inline">
-                        <div id="reset" class="btn btn-light controller btn-reset p-1"></div>
-                        <div id="previous" class="btn btn-light controller btn-previous p-1"></div>
-                        <div id="playpause" class="btn btn-light controller btn-play p-1"></div>
-                        <div>
-                          <input id="tempo" class="slider" type="range" min="5" max="240" value="" step="5">
-                          <p>Tempo: <span id="tempo_val">${tempo}</span></p>
-                        </div>
-                        <div id="volume_button" class="btn btn-light controller btn-volume2 p-1"></div>
+                    <div class="form-inline col-12">
+                        <div class="color-1-text mr-2">Tempo: <span id="tempo_val">${tempo}</span></div>
+                        <input id="tempo" class="slider mr-2" type="range" min="5" max="240" value="" step="5">
+                        <div id="previous" class="btn btn-custom controller btn-previous"></div>
+                        <div id="playpause" class="btn btn-custom controller btn-play mr-1"></div>
+                        <div id="volume_button" class="btn btn-custom controller btn-volume1 mr-2"></div>
                         <div>
                             <input id="volume" class="slider" type="range" min="0" max="100" value="100">
-                        </div>`
+                        </div>
+                        <div class="col-5"></div>`
                     if (api.getCurrentUser() !== null && api.getCurrentUser() !== ''){
                         draw +=`
-                            <button type="button" id="upload" class="btn btn-light controller btn-upload p-1" data-toggle="modal" data-target="#upload_modal"></button>
-                            <button type="button" id="save" class="btn btn-light controller btn-save p-1" data-toggle="collapse" data-target="#save_form"></button>
+                            <button type="button" id="upload" class="btn btn-custom controller btn-upload p-1" data-toggle="modal" data-target="#upload_modal"></button>
+                            <button type="button" id="save" class="btn btn-custom controller btn-save p-1" data-toggle="collapse" data-target="#save_form"></button>
                             <div id="save_form" class="collapse">
                                 <form>
                                     <div class="input-group">
@@ -204,7 +199,7 @@
                             </div>
                        `
                     }
-                    draw += `</div>`;
+                draw += `<div id="reset" class="btn btn-custom p-1">Clear</div></div>`;
                 controller.innerHTML = draw;
 
 
@@ -247,7 +242,6 @@
                     } else{
                         self.setVolume(0);
                     }
-
                 });
                 document.querySelector('#volume').addEventListener('input', function(){
                     volume = this.value;
@@ -282,5 +276,7 @@
         var initSequencer = new Sequencer();
         initSequencer.drawSequencer();
         initSequencer.drawController();
+        console.log(screen.width)
+        console.log(window.innerHeight)
     });
 })();
