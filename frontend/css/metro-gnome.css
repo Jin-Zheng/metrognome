@@ -71,16 +71,24 @@
     background-image: url("../media/play.png");
 }
 
+.btn-play:focus{
+    background-image: url("../media/delete-button.png");
+}
+
 .btn-pause {
     background-image: url("../media/pause.png");
 }
 
-.btn-rewind {
-    background-image: url("../media/rewind.png");
+.btn-stop {
+    background-image: url("../media/stop.png");
 }
 
 .btn-reset {
     background-image: url("../media/delete-button.png");
+}
+
+.btn-previous {
+    background-image: url("../media/previous.png");
 }
 
 .btn-upload {
@@ -93,4 +101,20 @@
 
 .btn-change {
     background-image: url("../media/shuffle.png");
+}
+
+.btn-mute{
+    background-image: url("../media/mute.png");
+}
+
+.btn-volume0{
+    background-image: url("../media/volume0.png");
+}
+
+.btn-volume1{
+    background-image: url("../media/volume1.png");
+}
+
+.btn-volume2{
+    background-image: url("../media/volume2.png");
 }

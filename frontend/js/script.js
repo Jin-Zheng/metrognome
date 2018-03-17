@@ -20,7 +20,7 @@
             s0: [new Audio("/file/kick1.mp3"), 'Bass'],
             s1: [new Audio("/file/snare.mp3"), 'Snare'],
             s2: [new Audio("/file/rimshot.mp3"), 'Rim'],
-            s3: [new Audio("/file/cl_hihat.mp3"), 'High Hat'],
+            s3: [new Audio("/file/cl_hihat.mp3"), 'HiHat'],
             s4: [new Audio("/file/tom1.mp3"), 'Tom'],
             s5: [new Audio("/file/crashcym.mp3"), 'Crash']
         };
@@ -136,6 +136,26 @@
                 });
             }
 
+            this.setVolume = function(volume){
+                var btn = document.querySelector('#volume_button');
+                if(volume >= 67){
+                    btn.classList.add('btn-volume2');
+                    btn.classList.remove('btn-mute', 'btn-volume0', 'btn-volume1');
+                }else if (volume > 33 && volume < 67){
+                    btn.classList.add('btn-volume1');
+                    btn.classList.remove('btn-mute', 'btn-volume0', 'btn-volume2');
+                }else if (volume <= 33 && volume > 0){
+                    btn.classList.add('btn-volume0');
+                    btn.classList.remove('btn-mute', 'btn-volume1', 'btn-volume2');
+                } else {
+                    btn.classList.add('btn-mute');
+                    btn.classList.remove('btn-volume0', 'btn-volume1', 'btn-volume2');
+                }
+                for (var i in audioFiles){
+                    audioFiles[i][0].volume = parseInt(volume) / 100;
+                }
+            }
+
             // Step through the sequencer
             this.step = function(){
                 if (!looping) return;
@@ -156,24 +176,23 @@
                 var controller = document.querySelector('#controller');
                 var draw = `
                     <div class="form-inline">
-                      <div id="rewind" class="btn btn-light controller btn-rewind p-1"></div>
-                      <div id="playpause" class="btn btn-light controller btn-play p-1"></div>
-                      <div id="reset" class="btn btn-light controller btn-reset p-1"></div>
-                      <div>
-                        <input id="tempo" class="slider" type="range" min="5" max="240" value="" step="5">
-                        <p>Tempo: <span id="tempo_val">${tempo}</span></p>
-                      </div>
-                      <div>
-                          <input id="volume" class="slider" type="range" min="0" max="100" value="100">
-                          <p>Volume: <span id="volume_val">${volume}</span></p>
-                      </div>`
-
-                      if (api.getCurrentUser() !== null && api.getCurrentUser() !== ''){
-                          draw +=`
-                              <button type="button" id="upload" class="btn btn-light controller btn-upload p-1" data-toggle="modal" data-target="#upload_modal"></button>
-                              <button type="button" id="save" class="btn btn-light controller btn-save p-1" data-toggle="collapse" data-target="#save_form"></button>
-                              <div id="save_form" class="collapse">
-                                  <form>
+                        <div id="reset" class="btn btn-light controller btn-reset p-1"></div>
+                        <div id="previous" class="btn btn-light controller btn-previous p-1"></div>
+                        <div id="playpause" class="btn btn-light controller btn-play p-1"></div>
+                        <div>
+                          <input id="tempo" class="slider" type="range" min="5" max="240" value="" step="5">
+                          <p>Tempo: <span id="tempo_val">${tempo}</span></p>
+                        </div>
+                        <div id="volume_button" class="btn btn-light controller btn-volume2 p-1"></div>
+                        <div>
+                            <input id="volume" class="slider" type="range" min="0" max="100" value="100">
+                        </div>`
+                    if (api.getCurrentUser() !== null && api.getCurrentUser() !== ''){
+                        draw +=`
+                            <button type="button" id="upload" class="btn btn-light controller btn-upload p-1" data-toggle="modal" data-target="#upload_modal"></button>
+                            <button type="button" id="save" class="btn btn-light controller btn-save p-1" data-toggle="collapse" data-target="#save_form"></button>
+                            <div id="save_form" class="collapse">
+                                <form>
                                     <div class="input-group">
                                       <input type="text" id="beat_title" class="form-control" placeholder="Title" required/>
                                       <input type="text" id="beat_description" class="form-control" placeholder="Description"/>
@@ -181,10 +200,10 @@
                                           <button id="beat_submit" type="submit" class="btn">Submit</button>
                                       </div>
                                     </div>
-                                  </form>
-                              </div>
-                         `
-                      }
+                                </form>
+                            </div>
+                       `
+                    }
                     draw += `</div>`;
                 controller.innerHTML = draw;
 
@@ -211,7 +230,7 @@
                     self.reset();
                     beat = 0;
                 })
-                document.querySelector('#rewind').addEventListener('click', function () {
+                document.querySelector('#previous').addEventListener('click', function () {
                     beat = 0;
                 })
                 document.querySelector('#tempo').addEventListener('input', function(){
@@ -222,12 +241,17 @@
                         looping = setInterval(self.step, 60000 / tempo / 4);
                     }
                 });
-                document.querySelector('#volume').addEventListener('input', function(){
-                    document.querySelector('#volume_val').innerHTML = this.value;
-                    volume = this.value;
-                    for (var i in audioFiles){
-                        audioFiles[i][0].volume = parseInt(volume) / 100;
+                document.querySelector('#volume_button').addEventListener('click', function(){
+                    if (document.querySelector('#volume_button').classList.contains('btn-mute')){
+                        self.setVolume(volume);
+                    } else{
+                        self.setVolume(0);
                     }
+
+                });
+                document.querySelector('#volume').addEventListener('input', function(){
+                    volume = this.value;
+                    self.setVolume(volume);
                 });
                 if (api.getCurrentUser() !== null && api.getCurrentUser() !== ''){
                     document.querySelector('#upload_form').addEventListener('submit', function(e){
@@ -254,7 +278,7 @@
             }
         }
 
-// ----------INIT----------
+        //----------INIT----------
         var initSequencer = new Sequencer();
         initSequencer.drawSequencer();
         initSequencer.drawController();

@@ -4,7 +4,6 @@
 const express = require('express');
 const favicon = require('serve-favicon');
 const path = require('path');
-const app = express();
 const bodyParser = require('body-parser');
 
 const cookie = require('cookie');
@@ -17,6 +16,9 @@ const MongoClient = require('mongodb').MongoClient;
 const multer  = require('multer');
 const GridFSStorage = require('multer-gridfs-storage');
 const Grid = require('gridfs-stream');
+
+const app = express();
+app.use(favicon(path.join(__dirname, '/frontend/media/', 'favicon.ico')));
 
 // Database connection / storage connection
 // Because of Async we cannot use any db or gfs commands on startup
@@ -377,7 +379,6 @@ app.use(function (req, res, next){
     next();
 });
 
-app.use(favicon(path.join(__dirname, '/frontend/media/', 'favicon.ico')));
 
 
 const http = require('http');
