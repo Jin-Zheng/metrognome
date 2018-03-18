@@ -37,30 +37,31 @@ passport.use(new FacebookStrategy({
     clientID: config.facebook_api_key,
     clientSecret:config.facebook_api_secret ,
     callbackURL: config.callback_url,
-    profileFields: ['email','id', 'first_name', 'gender', 'last_name', 'picture']
+    profileFields: ['email','id', 'first_name', 'gender', 'last_name']
   },
   function(accessToken, refreshToken, profile, done) {
     console.log('here');
     process.nextTick(function () {
 
 //TODO check if user is n our mongodb db, if not create user for that
-console.log(profile);
 db.collection('users').findOne({facebookID: profile.id}, function(err, user){
     if (err) return res.status(500).end(err);
     // If user does not exist
+    console.log(123123123);
+    console.log(profile);
+
     if (!user){
 
-    var newUser = {
-        firstName: profile.first_name,
-        lastName: profile.last_name,
-        email: profile.email,
-        facebookID: profile.id
-    };
+        var newUser = {
+            firstName: profile.name.givenName,
+            lastName: profile.name.familyName,
+            email: profile.emails[0].value,
+            facebookID: profile.id
+        };
 
-    db.collection('users').insert(newUser, function(err, result){
-        if (err) return console.log(err);
-        return res.json("user " + username + " signed up");
-    });
+        db.collection('users').insert(newUser, function(err, result){
+            if (err) return console.log(err);
+        });
     }
 });
 
