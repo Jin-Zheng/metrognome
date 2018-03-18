@@ -5,16 +5,16 @@
     app.controller('profileCtrl', ['$scope', function($scope) {
         // If user is not signed in don't show any user profile
         if (!api.getCurrentUser()){
-            document.querySelector('#signout_button').style.visibility = 'hidden';
-            document.querySelector('#signin_button').style.visibility = 'visible';
-            document.querySelector('#signin_button').style.position = 'absolute';
+            document.querySelector('#signout_button').classList.add("d-none");
+            document.querySelector('#profileLink').classList.add("d-none");
+            document.querySelector('#signin_button').classList.remove("d-none");
             $scope.notLoggedInProfile = true;
         } else{
             $scope.showProfile = true;
             $scope.showSuccessfulUpdate = false;
-            document.querySelector('#signout_button').style.visibility = 'visible';
-            document.querySelector('#signin_button').style.visibility = 'hidden';
-            document.querySelector('#signout_button').style.position = 'absolute';
+            document.querySelector('#signout_button').classList.remove("d-none");
+            document.querySelector('#profileLink').classList.remove("d-none");
+            document.querySelector('#signin_button').classList.add("d-none");
         }
         // Get the user information to populate profile page
         // Only run if there is a user logged in

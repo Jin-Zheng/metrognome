@@ -69,6 +69,12 @@ var checkUsername = function(req,res,next){
     next();
 }
 
+var checkUsernameParam = function(req,res,next){
+	if(!validator.isAlphanumeric(req.params.username)) return res.status(400).end("bad input");
+	next();
+}
+
+
 var sanitizeContent = function(req,res,next){
     req.body.content = validator.escape(req.body.content);
     next();
@@ -138,7 +144,7 @@ app.delete('/file/:filename', function(req, res, next){
 // ################################# USERS ##################################
 
 // Get user information
-app.get('/users/info/:username',checkUsername, function(req, res, next){
+app.get('/users/info/:username',checkUsernameParam, function(req, res, next){
     db.collection('users').findOne({_id: req.params.username}, function(err, user){
         if (err) return res.status(500).end(err);
         if (!user) return res.status(404).end("User #" + req.params.username + " does not exists");
@@ -167,7 +173,7 @@ app.put('/users/info/', function(req, res, next){
 })
 
 // Check whether password is equal to user password
-app.post('/users/passCheck/:username',checkUsername, function(req, res, next){
+app.post('/users/passCheck/:username', checkUsernameParam, function(req, res, next){
     var password = req.body.password;
     db.collection('users').findOne({_id: req.params.username}, function(err, user){
         if (err) return res.status(500).end(err);
@@ -249,10 +255,10 @@ app.get('/signout/', function (req, res, next) {
 app.post('/beat/',isAuthenticated,function(req,res,next){
     var beatSequence = req.body.beatSequence;
     var tempo = req.body.tempo;
-    var public = req.body.public;
+    var publicBool = req.body.publicBool;
     var title = req.body.title;
     var desc = req.body.desc;
-    var newBeat = {username:req.username, title, desc, beatSequence, tempo, public, upvotes:0, dateCreated: new Date()};
+    var newBeat = {username:req.username, title:title, desc:desc, beatSequence:beatSequence, tempo:tempo, publicBool:publicBool, upvotes:0, dateCreated: new Date()};
 
     //maybe later on add a check to not allow duplicate beats?
     db.collection('beats').insert(newBeat, function(err,result){
@@ -265,7 +271,7 @@ app.post('/beat/',isAuthenticated,function(req,res,next){
 
 //get beat by id
 app.get('/beat/:id',checkId,isAuthenticated,function(req,res,next){
-    db.collection('beats').findOne({_id:req.param.id},function(err,beat){
+    db.collection('beats').findOne({_id:req.params.id},function(err,beat){
         if(err) return res.status(500).end(err);
         if(beat === null) return res.status(404).end("No beat with that id exists");
         else{
@@ -277,7 +283,7 @@ app.get('/beat/:id',checkId,isAuthenticated,function(req,res,next){
 //get beat id by owner
 app.get('/beat/private/',isAuthenticated,function(req,res,next){
     var usersBeats = [];
-    db.collection('beats').find({username:req.session.username,public:false}).exec(function(err,result){
+    db.collection('beats').find({username:req.session.username,publicBool:false}).exec(function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("No private beats found for user");
         else{
@@ -292,7 +298,7 @@ app.get('/beat/private/',isAuthenticated,function(req,res,next){
 //get all public beat ids
 app.get('/beat/public/',isAuthenticated,function(req,res,next){
     var allBeats = [];
-    db.collection('beats').find({public:true}).sort({upvotes:1}).exec(function(err,result){
+    db.collection('beats').find({publicBool:true}).sort({upvotes:1}).exec(function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("No public beats found");
         else{
