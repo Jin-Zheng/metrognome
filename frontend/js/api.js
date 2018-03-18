@@ -87,12 +87,12 @@ var api = (function(){
 // ################################# BEATS ##################################
     //beat is set to public
     module.postBeat = function(beatSequence,tempo,callback){
-        send("POST", '/beat/',{beatSequence:beatSequence, tempo:tempo, public:true}, callback);
+        send("POST", '/beat/',{beatSequence:beatSequence, tempo:tempo, publicBool:true}, callback);
     }
 
     //beat is only viewable to user
     module.saveBeat = function(beatSequence, tempo, title, desc, callback){
-        send("POST", '/beat/',{beatSequence, tempo, title, desc, public:false}, callback);
+        send("POST", '/beat/',{beatSequence:beatSequence, tempo:tempo, title:title, desc:desc, publicBool:false}, callback);
     }
 
     //get beats by provided id
