@@ -36,10 +36,34 @@ passport.deserializeUser(function(obj, done) {
 passport.use(new FacebookStrategy({
     clientID: config.facebook_api_key,
     clientSecret:config.facebook_api_secret ,
-    callbackURL: config.callback_url
+    callbackURL: config.callback_url,
+    profileFields: ['email','id', 'first_name', 'gender', 'last_name', 'picture']
   },
   function(accessToken, refreshToken, profile, done) {
+    console.log('here');
     process.nextTick(function () {
+
+//TODO check if user is n our mongodb db, if not create user for that
+console.log(profile);
+db.collection('users').findOne({facebookID: profile.id}, function(err, user){
+    if (err) return res.status(500).end(err);
+    // If user does not exist
+    if (!user){
+
+    var newUser = {
+        firstName: profile.first_name,
+        lastName: profile.last_name,
+        email: profile.email,
+        facebookID: profile.id
+    };
+
+    db.collection('users').insert(newUser, function(err, result){
+        if (err) return console.log(err);
+        return res.json("user " + username + " signed up");
+    });
+    }
+});
+
       return done(null, profile);
     });
   }
@@ -167,14 +191,27 @@ app.delete('/file/:filename', function(req, res, next){
 })
 
 // ################################# USERS ##################################
+app.get('/',
+  function(req, res) {
+    res.render('home', { user: req.user });
+  });
+
+app.get('/auth/facebook/loginStatus', function(req, res, next){
+    console.log(req.session.username);
+});
 
 app.get('/auth/facebook', passport.authenticate('facebook', { authType: 'rerequest'}));
 
 app.get('/auth/facebook/callback',
-    passport.authenticate('facebook'),
+    passport.authenticate('facebook', { failureRedirect: '/profile.html' }),
     function(req, res) {
         console.log('Logged in through facebook');
-        console.log(req.user);
+        req.session.facebookID = req.user.id;
+        // initialize cookie
+        res.setHeader('Set-Cookie', cookie.serialize('facebookID', req.user.id, {
+              path : '/',
+              maxAge: 60 * 60 * 24 * 7
+        }));
         res.redirect('/');
 });
 
@@ -188,6 +225,11 @@ app.get('/users/info/:username',checkUsernameParam, function(req, res, next){
 })
 app.get('/logout', function(req, res){
     console.log("User logged out of Facebook");
+    req.session.destroy();
+    res.setHeader('Set-Cookie', cookie.serialize('username', '', {
+          path : '/',
+          maxAge: 60 * 60 * 24 * 7 // 1 week in number of seconds
+    }));
     req.logout();
     res.redirect('/');
 });
@@ -243,7 +285,8 @@ app.post('/signup/',checkUsername, function(req, res, next) {
             lastName: '',
             email: '',
             saltedHash: saltedHash,
-            salt: salt
+            salt: salt,
+            facebookID: ''
         };
 
         db.collection('users').insert(newUser, function(err, result){
