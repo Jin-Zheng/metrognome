@@ -17,8 +17,33 @@ const multer  = require('multer');
 const GridFSStorage = require('multer-gridfs-storage');
 const Grid = require('gridfs-stream');
 
+const passport = require('passport');
+const FacebookStrategy = require('passport-facebook').Strategy;
+const config = require('./configuration/config');
+
 const app = express();
 app.use(favicon(path.join(__dirname, '/frontend/media/', 'favicon.ico')));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+passport.deserializeUser(function(obj, done) {
+  done(null, obj);
+});
+passport.use(new FacebookStrategy({
+    clientID: config.facebook_api_key,
+    clientSecret:config.facebook_api_secret ,
+    callbackURL: config.callback_url
+  },
+  function(accessToken, refreshToken, profile, done) {
+    process.nextTick(function () {
+      return done(null, profile);
+    });
+  }
+));
 
 // Database connection / storage connection
 // Because of Async we cannot use any db or gfs commands on startup
@@ -137,6 +162,16 @@ app.delete('/file/:filename', function(req, res, next){
 
 // ################################# USERS ##################################
 
+app.get('/auth/facebook', passport.authenticate('facebook', { authType: 'rerequest'}));
+
+app.get('/auth/facebook/callback',
+    passport.authenticate('facebook'),
+    function(req, res) {
+        console.log('Logged in through facebook');
+        console.log(req.user);
+        res.redirect('/');
+});
+
 // Get user information
 app.get('/users/info/:username',checkUsername, function(req, res, next){
     db.collection('users').findOne({_id: req.params.username}, function(err, user){
@@ -145,7 +180,11 @@ app.get('/users/info/:username',checkUsername, function(req, res, next){
         return res.json(user);
     });
 })
-
+app.get('/logout', function(req, res){
+    console.log("User logged out of Facebook");
+    req.logout();
+    res.redirect('/');
+});
 // Update user info
 app.put('/users/info/', function(req, res, next){
     var user = req.body;
