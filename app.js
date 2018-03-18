@@ -255,10 +255,10 @@ app.get('/signout/', function (req, res, next) {
 app.post('/beat/',isAuthenticated,function(req,res,next){
     var beatSequence = req.body.beatSequence;
     var tempo = req.body.tempo;
-    var public = req.body.public;
+    var publicBool = req.body.publicBool;
     var title = req.body.title;
     var desc = req.body.desc;
-    var newBeat = {username:req.username, title, desc, beatSequence, tempo, public, upvotes:0, dateCreated: new Date()};
+    var newBeat = {username:req.username, title:title, desc:desc, beatSequence:beatSequence, tempo:tempo, publicBool:publicBool, upvotes:0, dateCreated: new Date()};
 
     //maybe later on add a check to not allow duplicate beats?
     db.collection('beats').insert(newBeat, function(err,result){
@@ -283,7 +283,7 @@ app.get('/beat/:id',checkId,isAuthenticated,function(req,res,next){
 //get beat id by owner
 app.get('/beat/private/',isAuthenticated,function(req,res,next){
     var usersBeats = [];
-    db.collection('beats').find({username:req.session.username,public:false}).exec(function(err,result){
+    db.collection('beats').find({username:req.session.username,publicBool:false}).exec(function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("No private beats found for user");
         else{
@@ -298,7 +298,7 @@ app.get('/beat/private/',isAuthenticated,function(req,res,next){
 //get all public beat ids
 app.get('/beat/public/',isAuthenticated,function(req,res,next){
     var allBeats = [];
-    db.collection('beats').find({public:true}).sort({upvotes:1}).exec(function(err,result){
+    db.collection('beats').find({publicBool:true}).sort({upvotes:1}).exec(function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("No public beats found");
         else{
