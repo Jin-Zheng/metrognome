@@ -180,26 +180,25 @@
                         <div id="volume_button" class="btn btn-custom controller btn-volume1 mr-2"></div>
                         <div>
                             <input id="volume" class="slider" type="range" min="0" max="100" value="100">
-                        </div>
-                        <div class="col-5"></div>`
+                        </div>`
                     if (api.getCurrentUser() !== null && api.getCurrentUser() !== ''){
                         draw +=`
-                            <button type="button" id="upload" class="btn btn-custom controller btn-upload p-1" data-toggle="modal" data-target="#upload_modal"></button>
-                            <button type="button" id="save" class="btn btn-custom controller btn-save p-1" data-toggle="collapse" data-target="#save_form"></button>
-                            <div id="save_form" class="collapse">
-                                <form>
-                                    <div class="input-group">
-                                      <input type="text" id="beat_title" class="form-control" placeholder="Title" required/>
-                                      <input type="text" id="beat_description" class="form-control" placeholder="Description"/>
-                                      <div class="row justify-content-center">
-                                          <button id="beat_submit" type="submit" class="btn">Submit</button>
-                                      </div>
-                                    </div>
-                                </form>
-                            </div>
+                            <button type="button" id="upload" class="btn btn-custom controller btn-upload mr-2 offset-5" data-toggle="modal" data-target="#upload_modal"></button>
+                            <button type="button" id="save" class="btn btn-custom controller btn-save mr-2" data-toggle="collapse" data-target="#save_form"></button>
                        `
                     }
-                draw += `<div id="reset" class="btn btn-custom p-1">Clear</div></div>`;
+                draw += `<div id="reset" class="btn btn-custom p-1">Clear</div></div>
+                        <div id="save_form" class="collapse offset-8 col-4">
+                            <form>
+                                <div class="input-group">
+                                  <input type="text" id="beat_title" class="form-control" placeholder="Title" required/>
+                                  <input type="text" id="beat_description" class="form-control mr-1" placeholder="Description"/>
+                                  <div class="row justify-content-center">
+                                      <button id="beat_submit" type="submit" class="btn input-group-append btn-custom">Submit</button>
+                                  </div>
+                                </div>
+                            </form>
+                        </div>`;
                 controller.innerHTML = draw;
 
 
