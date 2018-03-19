@@ -25,6 +25,9 @@
                 if(user) {
                     $scope.$apply(function(){
                         $scope._id = user._id;
+                        $scope.oldpass = '';
+                        $scope.pass1 = '';
+                        $scope.pass2 = '';
                         $scope.email = (user.email) ? user.email : '';
                         $scope.firstName = (user.firstName) ? user.firstName : '';
                         $scope.lastName = (user.lastName) ? user.lastName : '';
@@ -87,11 +90,13 @@
         function linkFunction(scope, elem, attr, ctrl) {
             // Watch pass1 and pass2 and check when they change
             scope.$watchGroup(['pass1', 'pass2','oldpass'], function(newValues, oldValues, scope) {
-                ctrl.$setValidity("same", newValues[0] === newValues[1]);
-                var bothNull = (newValues[0] == null && newValues[2] == null);
-                var bothEmpty = (newValues[0] === '' && newValues[2] === '');
-                var bothHaveValues = (newValues[0] !== '' && newValues[2] != null) && (newValues[0] !== '' && newValues[2] !== '');
-                ctrl.$setValidity("empty", ((bothNull || bothEmpty) || bothHaveValues));
+                ctrl.$setValidity("same", newValues[0] == newValues[1]);
+                var allEmpty = (newValues[0] === '' && newValues[1] === ''&& newValues[2] === '');
+                var oldPasswordSet = newValues[2] !== '';
+                ctrl.$setValidity("empty", allEmpty || oldPasswordSet);
+                var noNewPassword = (newValues[0] === '' && newValues[1] === ''&& newValues[2] !== '');
+                var atLeastOneNewPass = (newValues[0] !== '' || newValues[1] !== '');
+                ctrl.$setValidity("newPassword", (!noNewPassword || allEmpty || atLeastOneNewPass));
             });
         }
         return {
