@@ -41,6 +41,7 @@ passport.use(new FacebookStrategy({
   },
   function(accessToken, refreshToken, profile, done) {
     console.log('here');
+    console.log(accessToken);
     process.nextTick(function () {
 
 //TODO check if user is n our mongodb db, if not create user for that
@@ -56,7 +57,10 @@ db.collection('users').findOne({facebookID: profile.id}, function(err, user){
             firstName: profile.name.givenName,
             lastName: profile.name.familyName,
             email: profile.emails[0].value,
-            facebookID: profile.id
+            facebookID: profile.id,
+            token:'',
+            saltedHash: '',
+            salt: ''
         };
 
         db.collection('users').insert(newUser, function(err, result){
@@ -287,7 +291,8 @@ app.post('/signup/',checkUsername, function(req, res, next) {
             email: '',
             saltedHash: saltedHash,
             salt: salt,
-            facebookID: ''
+            facebookID: '',
+            token:''
         };
 
         db.collection('users').insert(newUser, function(err, result){
