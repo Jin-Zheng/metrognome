@@ -95,9 +95,9 @@ app.use(function(req,res,next){
 
 
 // ACME Challenge for cert
-app.get('/.well-known/acme-challenge/AoF7f_IZqmMuihQT8g50mli0sgbiuH0f665RMh5dxew', function(req, res) {
-  res.send('AoF7f_IZqmMuihQT8g50mli0sgbiuH0f665RMh5dxew.5NtdGmtdnlj26UILfKCIYI0NkedTh4K1blzcCLLYNMA')
-})
+//app.get('/.well-known/acme-challenge/AoF7f_IZqmMuihQT8g50mli0sgbiuH0f665RMh5dxew', function(req, res) {
+//  res.send('AoF7f_IZqmMuihQT8g50mli0sgbiuH0f665RMh5dxew.5NtdGmtdnlj26UILfKCIYI0NkedTh4K1blzcCLLYNMA')
+//})
 
 // Serve frontend
 app.use(express.static('frontend'));
@@ -393,18 +393,18 @@ app.use(function (req, res, next){
 
 
 
-const https = require('https');
+const http = require('http');
 const PORT = process.env.PORT || 3000;
 
-var privateKey = fs.readFileSync( 'privkey.pem' );
-var certificate = fs.readFileSync( 'fullchain.pem' );
-var config = {
-        key: privateKey,
-        cert: certificate
-};
+//var privateKey = fs.readFileSync( 'privkey.pem' );
+//var certificate = fs.readFileSync( 'fullchain.pem' );
+//var config = {
+//        key: privateKey,
+//        cert: certificate
+//};
 
-https.createServer(config, app).listen(PORT, function (err) {
+http.createServer( app).listen(PORT, function (err) {
     if (err) console.log(err);
-    else console.log("HTTPS server on http://localhost:%s", PORT);
+    else console.log("HTTP server on http://localhost:%s", PORT);
 });
 
