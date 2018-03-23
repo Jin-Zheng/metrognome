@@ -95,8 +95,8 @@ app.use(function(req,res,next){
 
 
 // ACME Challenge for cert
-app.get('/.well-known/acme-challenge/Vqjxwj1kfPkvFWLSHjqqH2NWE_IdCbqoZRcSejdo8hQ', function(req, res) {
-  res.send('Vqjxwj1kfPkvFWLSHjqqH2NWE_IdCbqoZRcSejdo8hQ.AQciWrRfHCkcs36nP7jH8NCOxmGHVwiQGQzKeVoO3Mw');
+app.get('/.well-known/acme-challenge/LYNmcrgBFFYeuc7x0YHnc-Q6FGqFClBsCFrS8dnOPnM', function(req, res) {
+  res.send('LYNmcrgBFFYeuc7x0YHnc-Q6FGqFClBsCFrS8dnOPnM.AQciWrRfHCkcs36nP7jH8NCOxmGHVwiQGQzKeVoO3Mw');
 })
 
 // Serve frontend
