@@ -2,17 +2,6 @@
 (function(){
     "use strict";
     window.addEventListener('load', function(){
-        if (!api.getCurrentUser()){
-            document.querySelector('#signout_button').classList.add("d-none");
-            document.querySelector('#profileLink').classList.add("d-none");
-            document.querySelector('#signin_button').classList.remove("d-none");
-
-        } else{
-            document.querySelector('#signout_button').classList.remove("d-none");
-            document.querySelector('#profileLink').classList.remove("d-none");
-            document.querySelector('#signin_button').classList.add("d-none");
-        }
-
         var sequencerState = {}; // {audioFileName: [audioFile, [steps]}
         // Frontend tutorial src: https://github.com/renasboy/simple-audio-sequencer/blob/master/index.html
         // Audio Files storage and default files
@@ -181,7 +170,7 @@
                         <div>
                             <input id="volume" class="slider" type="range" min="0" max="100" value="100">
                         </div>`
-                    if (api.getCurrentUser() !== null && api.getCurrentUser() !== ''){
+                    if ((api.getCookie("username") !== null && api.getCookie("username") !== '' || (api.getCookie("facebookID") !== null && api.getCookie("facebookID") !== ''))){
                         draw +=`
                             <button type="button" id="upload" class="btn btn-custom controller btn-upload mr-2 offset-5" data-toggle="modal" data-target="#upload_modal"></button>
                             <button type="button" id="save" class="btn btn-custom controller btn-save mr-2" data-toggle="collapse" data-target="#save_form"></button>
@@ -246,7 +235,7 @@
                     volume = this.value;
                     self.setVolume(volume);
                 });
-                if (api.getCurrentUser() !== null && api.getCurrentUser() !== ''){
+                if ((api.getCookie("facebookID") !== null && api.getCookie("facebookID") !== '' || (api.getCookie("username") !== null && api.getCookie("username") !== ''))){
                     document.querySelector('#upload_form').addEventListener('submit', function(e){
                         e.preventDefault();
                         var title = document.getElementById('upload_title').value;

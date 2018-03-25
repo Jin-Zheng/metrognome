@@ -28,8 +28,10 @@ var api = (function(){
         }
     }
 
+    var module = {};
+
     // Code taken from https://www.w3schools.com/js/js_cookies.asp
-    function getCookie(cname) {
+    module.getCookie = function(cname) {
         var name = cname + "=";
         var decodedCookie = decodeURIComponent(document.cookie);
         var ca = decodedCookie.split(';');
@@ -43,10 +45,7 @@ var api = (function(){
             }
         }
         return "";
-    }
-
-    var module = {};
-
+    };
 
 // ################################# FILES ##################################
     module.getFiles = function(callback){
@@ -69,11 +68,6 @@ var api = (function(){
         send("POST", "/signup/", {username: username, password: password}, callback);
     };
 
-    module.getCurrentUser = function(){
-        var l = document.cookie.split("username=");
-        if (l.length > 1) return l[1];
-        return null;
-    };
     module.getUserInfo = function(username, callback){
         send("GET", "/users/info/" + username + "/",null , callback);
     };

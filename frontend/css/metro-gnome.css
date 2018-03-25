@@ -189,3 +189,8 @@
 .btn-volume1:hover{
     background-image: url("../media/volume1-hover.png");
 }
+.facebook-login{
+    height:50px;
+    background-repeat:no-repeat;
+    background-image: url("../media/facebook-login.png");
+}

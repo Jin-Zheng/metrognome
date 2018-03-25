@@ -4,17 +4,11 @@
     var app = angular.module("profileApp", []);
     app.controller('profileCtrl', ['$scope', function($scope) {
         // If user is not signed in don't show any user profile
-        if (!api.getCurrentUser()){
-            document.querySelector('#signout_button').classList.add("d-none");
-            document.querySelector('#profileLink').classList.add("d-none");
-            document.querySelector('#signin_button').classList.remove("d-none");
+        if (!api.getCookie("username") || !api.getCookie("facebookID")){
             $scope.notLoggedInProfile = true;
         } else{
             $scope.showProfile = true;
             $scope.showSuccessfulUpdate = false;
-            document.querySelector('#signout_button').classList.remove("d-none");
-            document.querySelector('#profileLink').classList.remove("d-none");
-            document.querySelector('#signin_button').classList.add("d-none");
         }
         // Get the user information to populate profile page
         // Only run if there is a user logged in
