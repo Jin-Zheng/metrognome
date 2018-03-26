@@ -243,7 +243,7 @@ app.get('/users/info/', function(req, res, next){
         db.collection('users').findOne({facebookID: req.query.facebookID}, function(err, user){
             if (err) return res.status(500).end(JSON.stringify(err));
             if (!user) return res.status(404).end("Facebook User #" + user.facebookID + " does not exists");
-            return res.json(facebookUser);
+            return res.json(user);
         });
 })
 
