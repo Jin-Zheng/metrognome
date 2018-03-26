@@ -5,6 +5,7 @@ const express = require('express');
 const favicon = require('serve-favicon');
 const path = require('path');
 const bodyParser = require('body-parser');
+const fs = require('fs');
 
 const cookie = require('cookie');
 const crypto = require('crypto');
@@ -116,6 +117,11 @@ app.use(function(req,res,next){
     next();
 })
 
+
+// ACME Challenge for cert
+app.get('/.well-known/acme-challenge/LYNmcrgBFFYeuc7x0YHnc-Q6FGqFClBsCFrS8dnOPnM', function(req, res) {
+  res.send('LYNmcrgBFFYeuc7x0YHnc-Q6FGqFClBsCFrS8dnOPnM.AQciWrRfHCkcs36nP7jH8NCOxmGHVwiQGQzKeVoO3Mw');
+})
 
 // Serve frontend
 app.use(express.static('frontend'));
@@ -414,13 +420,6 @@ app.use(function (req, res, next){
 const http = require('http');
 const PORT = process.env.PORT || 3000;
 
-app.use(function (req, res, next) {
-    if (req.headers['x-forwarded-proto'] != 'https' && process.env.NODE_ENV === 'production') {
-        return res.redirect(301, 'https://' + req.headers.host + req.url);
-    } else {
-          return next();
-    }
-});
 
 http.createServer(app).listen(PORT, function (err) {
     if (err) console.log(err);
