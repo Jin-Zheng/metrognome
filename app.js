@@ -257,22 +257,23 @@ app.put('/users/info/', function(req, res, next){
         user.salt = salt;
         user.saltedHash = saltedHash;
     }
-    if (user._id && user._id !== '') {
-        db.collection('users').findOne({_id: user._id}, function(err, found){
-            if (err) return res.status(500).end(JSON.stringify(err));
-            if (!found) return res.status(404).end("User #" + user._id + " does not exists");
-            db.collection('users').update({_id: user._id}, {$set: user} , function(err, result){
-                if (err) return res.status(500).end(JSON.stringify(err));
-                return res.json("User has been updated");
-            });
-        });
-    } else if(user.facebookID && user.facebookID !== '') {
+    if(user.facebookID && user.facebookID !== '') {
         db.collection('users').findOne({facebookID: user.facebookID}, function(err, facebookFound){
             if (err) return res.status(500).end(JSON.stringify(err));
             if (!facebookFound) return res.status(404).end("Facebook User #" + user.facebookID + " does not exists");
             //Do not want to update id so delete
             delete user['_id'];
             db.collection('users').update({facebookID: user.facebookID}, {$set: user} , function(err, result){
+                if (err) return res.status(500).end(JSON.stringify(err));
+                return res.json("User has been updated");
+            });
+        });
+    }
+    else if (user._id && user._id != '') {
+        db.collection('users').findOne({_id: user._id}, function(err, found){
+            if (err) return res.status(500).end(JSON.stringify(err));
+            if (!found) return res.status(404).end("User #" + user._id + " does not exists");
+            db.collection('users').update({_id: user._id}, {$set: user} , function(err, result){
                 if (err) return res.status(500).end(JSON.stringify(err));
                 return res.json("User has been updated");
             });
