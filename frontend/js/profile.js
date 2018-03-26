@@ -4,7 +4,7 @@
     var app = angular.module("profileApp", []);
     app.controller('profileCtrl', ['$scope', function($scope) {
         // If user is not signed in don't show any user profile
-        if (!api.getCookie("username") || !api.getCookie("facebookID")){
+        if (!api.getCookie("username") && !api.getCookie("facebookID")){
             $scope.notLoggedInProfile = true;
         } else{
             $scope.showProfile = true;
@@ -12,8 +12,8 @@
         }
         // Get the user information to populate profile page
         // Only run if there is a user logged in
-        if (api.getCurrentUser()) {
-            api.getUserInfo(api.getCurrentUser(), function(err, user){
+        if (api.getCookie("username") || api.getCookie("facebookID")) {
+            api.getUserInfo(api.getCookie("username"), api.getCookie("facebookID"), function(err, user){
                 if (err) console.log(err);
                 //Update scope with user information
                 if(user) {
@@ -28,6 +28,7 @@
                         $scope.emailPlaceholder = (user.email) ? user.email : 'Enter email here';
                         $scope.firstNamePlaceholder = (user.firstName) ? user.firstName : 'Enter first name here';
                         $scope.lastNamePlaceholder = (user.lastName) ? user.lastName : 'Enter last name here';
+                        $scope.facebookID = api.getCookie("facebookID");
                     });
                 }
             });
@@ -36,6 +37,7 @@
         $scope.updateInfo = function() {
             var user = {
                 _id: $scope._id,
+                facebookID: $scope.facebookID,
                 firstName: $scope.firstName,
                 lastName: $scope.lastName,
                 email : $scope.email
@@ -48,11 +50,13 @@
                         user.password = $scope.pass1;
                         api.updateUserInfo(user, function(err, user){
                             if (err) console.log(err);
-                            $scope.$apply(function(){
-                                $scope.showProfile = false;
-                                $scope.showSuccessfulUpdate = true;
+                            else {
+                                $scope.$apply(function(){
+                                    $scope.showProfile = false;
+                                    $scope.showSuccessfulUpdate = true;
 
-                            });
+                                });
+                            }
                         });
                     } else {
                         // Show warning message if user has entered the wrong password
@@ -65,10 +69,12 @@
             } else {
                 api.updateUserInfo(user, function(err, user){
                     if (err) console.log(err);
-                    $scope.$apply(function(){
-                        $scope.showProfile = false;
-                        $scope.showSuccessfulUpdate = true;
-                    });
+                    else {
+                        $scope.$apply(function(){
+                            $scope.showProfile = false;
+                            $scope.showSuccessfulUpdate = true;
+                        });
+                    }
                 });
             }
         };

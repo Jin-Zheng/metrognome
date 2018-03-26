@@ -232,11 +232,18 @@ app.get('/auth/facebook/callback',
 });
 
 // Get user information
-app.get('/users/info/:username',checkUsernameParam, function(req, res, next){
-    db.collection('users').findOne({_id: req.params.username}, function(err, user){
-        if (err) return res.status(500).end(err);
-        if (!user) return res.status(404).end("User #" + req.params.username + " does not exists");
-        return res.json(user);
+app.get('/users/info/', function(req, res, next){
+    db.collection('users').findOne({_id: req.query.username}, function(err, user){
+        if (err) return res.status(500).end(JSON.stringify(err));
+        if (!user) {
+            db.collection('users').findOne({facebookID: req.query.facebookID}, function(err, facebookUser){
+                if (err) return res.status(500).end(JSON.stringify(err));
+                if (!facebookUser) return res.status(404).end("User #" + req.query.username + " does not exists");
+                return res.json(facebookUser);
+            });
+        }
+        else
+            return res.json(user);
     });
 })
 
@@ -251,12 +258,24 @@ app.put('/users/info/', function(req, res, next){
         user.saltedHash = saltedHash;
     }
     db.collection('users').findOne({_id: user._id}, function(err, found){
-        if (err) return res.status(500).end(err);
-        if (!found) return res.status(404).end("User #" + user._id + " does not exists");
-        db.collection('users').update({_id: user._id}, {$set: user} , function(err, result){
-            if (err) return res.status(500).end(err);
-            return res.json("User has been updated");
-        });
+        if (err) return res.status(500).end(JSON.stringify(err));
+        if (!found) {
+            db.collection('users').findOne({facebookID: user.facebookID}, function(err, facebookFound){
+                if (err) return res.status(500).end(JSON.stringify(err));
+                if (!facebookFound) return res.status(404).end("Facebook User #" + user.facebookID + " does not exists");
+                //Do not want to update id so delete
+                delete user['_id'];
+                db.collection('users').update({facebookID: user.facebookID}, {$set: user} , function(err, result){
+                    if (err) return res.status(500).end(JSON.stringify(err));
+                    return res.json("User has been updated");
+                });
+            });
+        } else {
+            db.collection('users').update({_id: user._id}, {$set: user} , function(err, result){
+                if (err) return res.status(500).end(JSON.stringify(err));
+                return res.json("User has been updated");
+            });
+        }
     });
 })
 

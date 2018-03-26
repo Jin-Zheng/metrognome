@@ -2,7 +2,6 @@
 (function(){
     "use strict";
     window.addEventListener('load', function(){
-    console.log(api.getCookie("facebookID"));
         if (api.getCookie("facebookID") || api.getCookie("username")){
             document.querySelector('#signout_button').classList.remove("d-none");
             document.querySelector('#profileLink').classList.remove("d-none");

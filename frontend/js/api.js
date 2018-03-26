@@ -68,8 +68,8 @@ var api = (function(){
         send("POST", "/signup/", {username: username, password: password}, callback);
     };
 
-    module.getUserInfo = function(username, callback){
-        send("GET", "/users/info/" + username + "/",null , callback);
+    module.getUserInfo = function(username, facebookID, callback){
+        send("GET", "/users/info/?username=" + username +"&facebookID="+facebookID ,null , callback);
     };
     module.updateUserInfo = function(userInfo, callback){
         send("PUT", "/users/info/", userInfo , callback);
