@@ -185,6 +185,7 @@
                         draw +=`
                             <button type="button" id="upload" class="btn btn-custom controller btn-upload mr-2 offset-5" data-toggle="modal" data-target="#upload_modal"></button>
                             <button type="button" id="save" class="btn btn-custom controller btn-save mr-2" data-toggle="collapse" data-target="#save_form"></button>
+                            <button type="button" id="postBeat" class="btn btn-custom controller btn-post"></button>
                        `
                     }
                 draw += `<div id="reset" class="btn btn-custom p-1">Clear</div></div>
@@ -265,6 +266,15 @@
                         api.saveBeat(sequencerState, tempo, title, desc, function(err, beat){
                             if (err) return alert(err);
                             alert('saved!')
+                        });
+                    });
+                    document.querySelector('#postBeat').addEventListener('click',function(e){
+                        e.preventDefault();
+                        api.postBeat(sequencerState,tempo,function(err,result){
+                            if(err) return alert(err);
+                            else{
+                                alert('posted!');
+                            }
                         });
                     });
                 }

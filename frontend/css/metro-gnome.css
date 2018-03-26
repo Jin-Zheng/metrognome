@@ -189,3 +189,10 @@
 .btn-volume1:hover{
     background-image: url("../media/volume1-hover.png");
 }
+
+.btn-post{
+    background-image: url("../media/podium.png");
+}
+.btn-post:hover{
+    background-image: url("../media/podium-hover.png");
+}

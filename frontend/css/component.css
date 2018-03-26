@@ -1,0 +1,91 @@
+/* Common styles and resets */
+
+.dotstyle ul {
+	position: relative;
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	cursor: default;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.dotstyle li {
+	position: relative;
+	display: block;
+	float: left;
+	margin: 0 16px;
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+
+.dotstyle li a {
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	outline: none;
+	border-radius: 50%;
+	background-color: rgb(0, 194, 199);
+	background-color: rgba(255, 255, 255, 0.3);
+	text-indent: -999em; /* make the text accessible to screen readers */
+	cursor: pointer;
+	position: absolute;
+}
+
+.dotstyle li a:focus {
+	outline: none;
+}
+
+/* Fly in */
+
+.dotstyle-hop li a {
+	border: 2px solid rgb(0,194,199);
+	background: transparent;
+}
+
+.dotstyle-hop li a::after {
+	content: '';
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	left: 0;
+	border-radius: 50%;
+	visibility: hidden;
+	background: rgb(0, 194, 199);
+	opacity: 0;
+	-webkit-transform: rotate(100deg);
+	transform: rotate(100deg);
+	-webkit-transform-origin: -200% 50%;
+	transform-origin: -200% 50%;
+	-webkit-transition: -webkit-transform 0.3s ease 0.3s, opacity 0.3s ease, visibility 0s 0.3s ease;
+	transition: transform 0.3s ease 0.3s, opacity 0.3s ease, visibility 0s 0.3s ease;
+}
+
+.dotstyle-hop li a:focus {
+	background: rgba(255, 255, 255, 0.2);
+}
+
+.dotstyle-hop li.current-from-right a::after {
+	-webkit-transition: none;
+	transition: none;
+	-webkit-transform: rotate(-100deg);
+	transform: rotate(-100deg);
+	-webkit-transform-origin: 300% 50%;
+	transform-origin: 300% 50%;
+}
+
+.dotstyle-hop li.current a::after {
+	visibility: visible;
+	opacity: 1;
+	-webkit-transform: rotate(0deg);
+	transform: rotate(0deg);
+	-webkit-transition: -webkit-transform 0.3s ease, opacity 0.3s ease;
+	transition: transform 0.3s ease, opacity 0.3s ease;
+}
