@@ -87,7 +87,7 @@
     });
     // Directive to check if user has entered the same 'new password' and 'confirmed password'
     app.directive("passCheck", function() {
-        function linkFunction(scope, elem, attr, ctrl) {
+        function checkPassword(scope, elem, attr, ctrl) {
             // Watch pass1 and pass2 and check when they change
             scope.$watchGroup(['pass1', 'pass2','oldpass'], function(newValues, oldValues, scope) {
                 ctrl.$setValidity("same", newValues[0] == newValues[1]);
@@ -101,7 +101,7 @@
         }
         return {
             require: 'ngModel',
-            link: linkFunction
+            link: checkPassword
         };
     });
 
