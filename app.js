@@ -233,18 +233,18 @@ app.get('/auth/facebook/callback',
 
 // Get user information
 app.get('/users/info/', function(req, res, next){
-    db.collection('users').findOne({_id: req.query.username}, function(err, user){
-        if (err) return res.status(500).end(JSON.stringify(err));
-        if (!user) {
-            db.collection('users').findOne({facebookID: req.query.facebookID}, function(err, facebookUser){
-                if (err) return res.status(500).end(JSON.stringify(err));
-                if (!facebookUser) return res.status(404).end("User #" + req.query.username + " does not exists");
-                return res.json(facebookUser);
-            });
-        }
-        else
+    if (req.query.username && req.query.username !== '') {
+        db.collection('users').findOne({_id: req.query.username}, function(err, user){
+            if (err) return res.status(500).end(JSON.stringify(err));
+            if (!user) return res.status(404).end("User #" + user.username + " does not exists");
             return res.json(user);
-    });
+        });
+    } else if(req.query.facebookID && req.query.facebookID !== '')
+        db.collection('users').findOne({facebookID: req.query.facebookID}, function(err, user){
+            if (err) return res.status(500).end(JSON.stringify(err));
+            if (!user) return res.status(404).end("Facebook User #" + user.facebookID + " does not exists");
+            return res.json(user);
+        });
 })
 
 // Update user info
@@ -257,26 +257,28 @@ app.put('/users/info/', function(req, res, next){
         user.salt = salt;
         user.saltedHash = saltedHash;
     }
-    db.collection('users').findOne({_id: user._id}, function(err, found){
-        if (err) return res.status(500).end(JSON.stringify(err));
-        if (!found) {
-            db.collection('users').findOne({facebookID: user.facebookID}, function(err, facebookFound){
+    if(user.facebookID && user.facebookID !== '') {
+        db.collection('users').findOne({facebookID: user.facebookID}, function(err, facebookFound){
+            if (err) return res.status(500).end(JSON.stringify(err));
+            if (!facebookFound) return res.status(404).end("Facebook User #" + user.facebookID + " does not exists");
+            //Do not want to update id so delete
+            delete user['_id'];
+            db.collection('users').update({facebookID: user.facebookID}, {$set: user} , function(err, result){
                 if (err) return res.status(500).end(JSON.stringify(err));
-                if (!facebookFound) return res.status(404).end("Facebook User #" + user.facebookID + " does not exists");
-                //Do not want to update id so delete
-                delete user['_id'];
-                db.collection('users').update({facebookID: user.facebookID}, {$set: user} , function(err, result){
-                    if (err) return res.status(500).end(JSON.stringify(err));
-                    return res.json("User has been updated");
-                });
+                return res.json("User has been updated");
             });
-        } else {
+        });
+    }
+    else if (user._id && user._id != '') {
+        db.collection('users').findOne({_id: user._id}, function(err, found){
+            if (err) return res.status(500).end(JSON.stringify(err));
+            if (!found) return res.status(404).end("User #" + user._id + " does not exists");
             db.collection('users').update({_id: user._id}, {$set: user} , function(err, result){
                 if (err) return res.status(500).end(JSON.stringify(err));
                 return res.json("User has been updated");
             });
-        }
-    });
+        });
+    }
 })
 
 // Check whether password is equal to user password
