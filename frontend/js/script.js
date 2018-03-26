@@ -6,16 +6,15 @@
         // Frontend tutorial src: https://github.com/renasboy/simple-audio-sequencer/blob/master/index.html
         // Audio Files storage and default files
         var audioFiles = {
-            s0: [new Audio("/file/kick1.mp3"), 'Bass'],
-            s1: [new Audio("/file/snare.mp3"), 'Snare'],
-            s2: [new Audio("/file/rimshot.mp3"), 'Rim'],
-            s3: [new Audio("/file/cl_hihat.mp3"), 'HiHat'],
-            s4: [new Audio("/file/tom1.mp3"), 'Tom'],
-            s5: [new Audio("/file/crashcym.mp3"), 'Crash']
+            s0: [new Audio("/file/kick1.mp3"), 'Bass', "/file/kick1.mp3"], // IM SURE STORING THIS IN LOCALSTORAGE IS A SECURITY HAZARD
+            s1: [new Audio("/file/snare.mp3"), 'Snare', "/file/snare.mp3"],
+            s2: [new Audio("/file/rimshot.mp3"), 'Rim', "/file/rimshot.mp3"],
+            s3: [new Audio("/file/cl_hihat.mp3"), 'HiHat', "/file/cl_hihat.mp3"],
+            s4: [new Audio("/file/tom1.mp3"), 'Tom', "/file/tom1.mp3"],
+            s5: [new Audio("/file/crashcym.mp3"), 'Crash', "/file/crashcym.mp3"]
         };
         // Key of the audioFile which is being changed.
         var currChange = '';
-
 
         //src: https://stackoverflow.com/questions/5116929/get-clicked-li-from-ul-onclick
         function getEventTarget(e) {
@@ -29,21 +28,39 @@
                 if (err) return alert(err);
                 var draw = `<ul id="filesList" class="list-group">`;
                 for (var i in files){
-                    draw += `<li id=${files[i].filename} class="list-group-item list-group-item-action" data-dismiss="modal">
-                        ${files[i].metadata.title}
-                    </li>`
+                    draw += `<li id=${files[i].filename} class="list-group-item list-group-item-action" data-dismiss="modal">${files[i].metadata.title}</li>`
                 }
                 draw += `</ul>`;
                 document.querySelector('#displayFiles').innerHTML = draw;
 
                 document.querySelector('#filesList').addEventListener('click', function(e){
                     var target = getEventTarget(e);
-                    audioFiles[currChange] = [new Audio('file/' + target.id), target.innerHTML]
+                    audioFiles[currChange] = [new Audio('file/' + target.id), target.innerHTML, 'file/' + target.id]
+                    sequencerState[currChange][0] = audioFiles[currChange];
+                    localStorage.setItem("seqState", JSON.stringify(sequencerState));
                     initSequencer.drawSequencer();
                 });
             });
         }
 
+        var sequencerStateInit = function(steps){
+            var storageState = JSON.parse(localStorage.getItem("seqState"));
+            if (storageState == null){
+                for (var i in audioFiles){
+                    sequencerState[i] = [audioFiles[i], {}];
+                    for (var j = 0; j < steps; j++){
+                        sequencerState[i][1]['step' + j] = false;
+                    }
+                }
+                localStorage.setItem("seqState", JSON.stringify(sequencerState));
+            }
+            else {
+                sequencerState = storageState;
+                for (var i in audioFiles){
+                    audioFiles[i] = [new Audio(storageState[i][0][2]), storageState[i][0][1], storageState[i][0][2]]
+                }
+            }
+        }
 
         // Create a sequencer object
         var Sequencer = function () {
@@ -55,13 +72,13 @@
             var volume = 100;
             var steps = 16;
 
+            sequencerStateInit(steps);
             // Draw the main sequencer element
             this.drawSequencer = function(){
                 var sequencer = document.querySelector('#sequencer');
                 var draw = ``;
                 // Draw row
                 for (var i in audioFiles){
-                    sequencerState[i] = [audioFiles[i], []];
                     draw += `<div id=${i} class="row m-1">`;
                     // audioFile playing + controls
                     draw +=`<button type="button" class="btn btn-custom change btn-change" id=${i + "change"} data-toggle="modal" data-target="#choose_file"></button>
@@ -71,10 +88,18 @@
                     // steps
                     for (var j = 0; j < steps; j++){
                         draw += `<div id=${'step' + j} class="sequencer_step-xl btn col-auto color-4"></div>`;
-                        sequencerState[i][1].push(false);
                     }
                     draw += '</div>';
                     sequencer.innerHTML = draw;
+                }
+
+                // load existing sequencerState
+                for (var i in sequencerState){
+                    for (var j in sequencerState[i][1]){
+                        if (sequencerState[i][1][j]){
+                            document.querySelector('#' + i + ' #' + j).classList.toggle('play')
+                        }
+                    }
                 }
 
                 // Add event listeners
@@ -111,8 +136,9 @@
                 })
                 document.querySelectorAll('.sequencer_step-xl').forEach(function(elmt){
                     elmt.addEventListener('click', function () {
-                        sequencerState[elmt.parentNode.id][1][elmt.id.split('step')[1]] = true;
+                        sequencerState[elmt.parentNode.id][1][elmt.id] = true;
                         this.classList.toggle('play');
+                        localStorage.setItem('seqState', JSON.stringify(sequencerState));
                     });
                 });
             }
@@ -120,8 +146,9 @@
             // Reset the sequencer
             this.reset = function(){
                 document.querySelectorAll('.play').forEach(function (elmt) {
-                    sequencerState[elmt.parentNode.id][1][elmt.id.split('step')[1]] = false;
+                    sequencerState[elmt.parentNode.id][1][elmt.id] = false;
                     elmt.classList.remove('play');
+                    localStorage.setItem('seqState', JSON.stringify(sequencerState));
                 });
             }
 
@@ -145,8 +172,6 @@
             // Step through the sequencer
             this.step = function(){
                 if (!looping) return;
-                if (beat < steps - 1) beat++;
-                else beat = 0;
 
                 // Loop through rows and play if column contains class play
                 for (var j in audioFiles){
@@ -155,6 +180,9 @@
                         play.parentNode.click();
                     }
                 };
+
+                if (beat < steps - 1) beat++;
+                else beat = 0;
             }
 
             // Draw the control panel element
@@ -174,6 +202,7 @@
                         draw +=`
                             <button type="button" id="upload" class="btn btn-custom controller btn-upload mr-2 offset-5" data-toggle="modal" data-target="#upload_modal"></button>
                             <button type="button" id="save" class="btn btn-custom controller btn-save mr-2" data-toggle="collapse" data-target="#save_form"></button>
+                            <button type="button" id="postBeat" class="btn btn-custom controller btn-post"></button>
                        `
                     }
                 draw += `<div id="reset" class="btn btn-custom p-1">Clear</div></div>
@@ -256,6 +285,15 @@
                             alert('saved!')
                         });
                     });
+                    document.querySelector('#postBeat').addEventListener('click',function(e){
+                        e.preventDefault();
+                        api.postBeat(sequencerState,tempo,function(err,result){
+                            if(err) return alert(err);
+                            else{
+                                alert('posted!');
+                            }
+                        });
+                    });
                 }
             }
         }
@@ -264,7 +302,6 @@
         var initSequencer = new Sequencer();
         initSequencer.drawSequencer();
         initSequencer.drawController();
-        console.log(screen.width)
-        console.log(window.innerHeight)
+        console.log(JSON.parse(localStorage.getItem("seqState")))
     });
 })();

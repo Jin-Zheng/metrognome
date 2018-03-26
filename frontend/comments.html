@@ -8,7 +8,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>Popular Beats</title>
+  <title>Comments</title>
 
   <!-- Bootstrap core CSS -->
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -22,12 +22,9 @@
   <link href="css/beats.css" rel="stylesheet" type="text/css"/>
   <link href="css/metro-gnome.css" rel="stylesheet" type="text/css"/>
   <link rel="stylesheet" type="text/css" href="css/component.css" />
-
-  <!--script src="https://cloud.tinymce.com/stable/tinymce.min.js"></script-->
-
 </head>
 
-<body style="padding:120px" ng-app="popBeats">
+<body style="padding:120px" ng-app="popComment">
 
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
@@ -49,50 +46,50 @@
     </div>
   </nav>
 
-	<div>
-      <div class="container mt-5">
-        <div class="row align-content-center">
-          <div class="col-12 p-5">
-              <div id="sequencer" class="container"></div>
-              <div id="controller" class="container mt-2 p-2 border-top"></div>
-          </div>
+
+
+
+  <div class="container" ng-controller="CommentController">
+
+      <div class="row">
+        <div class="col ">
+          <div id="messages" ng-repeat="comment in filteredComments">
+            <div class="message">
+              <div class="message_user">
+                <div class="message_username">{{comment.username}}</div>
+              </div>
+              <div class="message_content">{{comment.content}}</div>
+              <div ng-cloak ng-show="deleteAccess(comment.username)" id="{{comment._id}}" class="delete-icon icon" ng-click="deleteComment(comment._id)"></div>
+            </div>
+            </div>
+        </div>
+        
+      </div>
+      <div class="row margin15px">
+        <div class="col offset-5">
+          <button type="button" ng-disabled="firstPage" ng-click="goBack()" class="btn btn-secondary">Previous</button>
+          <button type="button" ng-disabled="lastPage" ng-click="goForward()" class="btn btn-secondary">Next</button>
         </div>
       </div>
-	</div>
-
-  <div class="container" ng-controller="beatController">
-    <div class="row justify-content-center" id="format-beats" >
-      <div class="col-xs-2 icon back" ng-click="goBack()" ></div>
-      <div class="col-xs-2" ng-repeat="beat in beats" >
-        <div class="col-xs-12 tile">
-          <div class="tile-info" >Author: {{beat.username}}</div>
-          <div class="play-cont">
-            <span class="helper"></span>
-            <div id="play-{{beat._id}}" class="play-button" ng-click="playBeat(beat._id)"></div>
+        
+      <form ng-submit="submit()" class="col">
+        <div class="row margin15px">
+            <textarea class="col" ng-model="commentSubmit" placeholder="Enter your message..."></textarea>
+        </div>
+        <div class="row" class="margin-15px">
+          <div class="col-8">
+              <button type="submit" class="btn btn-primary">Post your message</button>
           </div>
-          <table id="width-100">
-            <tr>
-              <td><div id="like-{{beat._id}}" class="minicon like" ng-click="sendLike(beat._id)"></div></td>
-              <td><div id="chat-{{beat._id}}" ng-click="goToComments(beat._id)" class="minicon chat" ></div></td>
-            </tr>           
-          </table>
-        </div>  
-      </div>
-    
-      <div class="col-xs-2 icon forward" ng-click="goForward()" ></div>
-    </div>
-
-
-    <div class="row justify-content-center">
-      <div class="dotstyle dotstyle-hop">
-        <h2></h2>
-        <ul>
-          <li class="current"><a href="#" ng-click="goToPage(0)"></a></li>
-          <li ng-repeat="dot in numOfDots"><a href="#" ng-click="goToPage(dot)"></a></li>
-        </ul>
-      </div>
-    </div>
+        </div>
+        
+      </form> 
   </div>
+
+
+
+
+
+  
 
 
 
@@ -106,26 +103,12 @@
   </footer>
 
   <!-- Bootstrap core JavaScript -->
+  
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.js"></script>
-
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
   <script src="js/api.js"></script>
-  <script src="js/popularbeats.js"></script>
-  <script src="js/dots.js"></script>
-  <script>
-      window.onload = function() {
-        
-         [].slice.call( document.querySelectorAll( '.dotstyle > ul' ) ).forEach( function( nav ) {
-         new DotNav( nav, {
-           callback : function( idx ) {
-             //console.log( idx )
-           }
-         } );
-       } );
-      };
-     </script>
-	 
+  <script src="js/comments.js"></script>
 	
 </body>
 

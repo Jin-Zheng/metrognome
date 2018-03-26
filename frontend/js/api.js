@@ -95,12 +95,16 @@ var api = (function(){
     }
 
     //will be used for popular beats page
-    module.getPublicBeatsId = function(callback){
-        send("GET","/beat/public/",null,callback);
+    module.getPublicBeats = function(callback){
+        send("GET","/beat/public/popular",null,callback);
     }
 
     module.deleteBeat = function(beatId, callback){
         send("DELETE","/beat/"+beatId+"/", null,callback);
+    }
+
+    module.upvote = function(beatId, callback){
+        send("PATCH","/beat/upvote/"+beatId+"/",null,callback);
     }
 
 // ################################# PROFILE ##################################
@@ -111,11 +115,11 @@ var api = (function(){
 
 // ################################# COMMENTS ##################################
     module.addComment = function(beatId,content,callback){
-        send("POST", "/comment/", {beatId:beatId,content:content});
+        send("POST", "/comment/", {beatId:beatId,content:content},callback);
     }
 
-    module.getComment = function(beatId,offset,callback){
-        send("GET","/comment/"+beatId+"/?offset="+offset,null,callback);
+    module.getComment = function(beatId,callback){
+        send("GET","/comment/"+beatId+"/",null,callback);
     }
 
     module.deleteComment = function(commentId, callback){
