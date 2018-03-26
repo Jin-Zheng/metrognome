@@ -48,22 +48,12 @@ app.controller("CommentController", function($scope, $location) {
             
                 $scope.goBack = function() {
                     $scope.currentPage = $scope.currentPage - 1;
-                   /*  api.getComment(beatId, $scope.currentPage*$scope.numPerPage, function(err,newData){
-                        if(err) console.log(err);
-                        else{
-                            $scope.comments = newData
-                        }
-                    }); */
+                   
                 };
             
                 $scope.goForward = function() {
                     $scope.currentPage = $scope.currentPage + 1;
-                    /* api.getComment(beatId, $scope.currentPage*$scope.numPerPage, function(err,newData){
-                        if(err) console.log(err);
-                        else{
-                            $scope.comments = newData
-                        }
-                    }); */
+                    
                 }
             
                 $scope.deleteComment = function(id){
@@ -90,13 +80,6 @@ app.controller("CommentController", function($scope, $location) {
                     
                     $scope.disableButtons();
                     $scope.filteredComments = $scope.comments.slice(begin,end);
-                    //$scope.filteredComments = $scope.comments.slice(begin, end);
-                    /* api.getComment(beatId, $scope.currentPage*$scope.numPerPage, function(err,newData){
-                        if(err) console.log(err);
-                        else{
-                            $scope.comments = newData;
-                        }
-                    }); */
                 });
             });
 
