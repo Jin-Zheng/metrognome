@@ -18,6 +18,30 @@ const multer  = require('multer');
 const GridFSStorage = require('multer-gridfs-storage');
 const Grid = require('gridfs-stream');
 
+/* testing for merging and concatenating audio files
+const ffmpeg = require('fluent-ffmpeg');
+var audioPath = path.join(__dirname, '/upload/')
+var audioconcat = require('audioconcat')
+
+var songs = [
+  audioPath + 'kick1.mp3',
+  audioPath + 'snare.mp3'
+]
+
+audioconcat(songs)
+  .concat('all.mp3')
+  .on('start', function (command) {
+    console.log('ffmpeg process started:', command)
+  })
+  .on('error', function (err, stdout, stderr) {
+    console.error('Error:', err)
+    console.error('ffmpeg stderr:', stderr)
+  })
+  .on('end', function (output) {
+    console.error('Audio created in:', output)
+  })*/
+
+
 const app = express();
 app.use(favicon(path.join(__dirname, '/frontend/media/', 'favicon.ico')));
 
@@ -397,7 +421,7 @@ const http = require('http');
 const PORT = process.env.PORT || 3000;
 
 
-http.createServer(config, app).listen(PORT, function (err) {
+http.createServer(app).listen(PORT, function (err) {
     if (err) console.log(err);
     else console.log("HTTP server on http://localhost:%s", PORT);
 });
