@@ -43,25 +43,6 @@
             });
         }
 
-        var sequencerStateInit = function(steps){
-            var storageState = JSON.parse(localStorage.getItem("seqState"));
-            if (storageState == null){
-                for (var i in audioFiles){
-                    sequencerState[i] = [audioFiles[i], {}];
-                    for (var j = 0; j < steps; j++){
-                        sequencerState[i][1]['step' + j] = false;
-                    }
-                }
-                localStorage.setItem("seqState", JSON.stringify(sequencerState));
-            }
-            else {
-                sequencerState = storageState;
-                for (var i in audioFiles){
-                    audioFiles[i] = [new Audio(storageState[i][0][2]), storageState[i][0][1], storageState[i][0][2]]
-                }
-            }
-        }
-
         // Create a sequencer object
         var Sequencer = function () {
             var size = 'xl';
@@ -72,7 +53,24 @@
             var volume = 100;
             var steps = 16;
 
-            sequencerStateInit(steps);
+            this.stateInit = function(){ // ADD SAVING TEMPO AND VOLUME TO LOCAL STORAGE TOO ******* REMIND ME IF SOMEONE SEES THIS
+                var storageState = JSON.parse(localStorage.getItem("seqState"));
+                if (storageState == null){
+                    for (var i in audioFiles){
+                        sequencerState[i] = [audioFiles[i], {}];
+                        for (var j = 0; j < steps; j++){
+                            sequencerState[i][1]['step' + j] = false;
+                        }
+                    }
+                    localStorage.setItem("seqState", JSON.stringify(sequencerState));
+                }
+                else {
+                    sequencerState = storageState;
+                    for (var i in audioFiles){
+                        audioFiles[i] = [new Audio(storageState[i][0][2]), storageState[i][0][1], storageState[i][0][2]]
+                    }
+                }
+            }
             // Draw the main sequencer element
             this.drawSequencer = function(){
                 var sequencer = document.querySelector('#sequencer');
@@ -136,7 +134,7 @@
                 })
                 document.querySelectorAll('.sequencer_step-xl').forEach(function(elmt){
                     elmt.addEventListener('click', function () {
-                        sequencerState[elmt.parentNode.id][1][elmt.id] = true;
+                        sequencerState[elmt.parentNode.id][1][elmt.id] = !sequencerState[elmt.parentNode.id][1][elmt.id];
                         this.classList.toggle('play');
                         localStorage.setItem('seqState', JSON.stringify(sequencerState));
                     });
@@ -300,8 +298,8 @@
 
         //----------INIT----------
         var initSequencer = new Sequencer();
+        initSequencer.stateInit();
         initSequencer.drawSequencer();
         initSequencer.drawController();
-        console.log(JSON.parse(localStorage.getItem("seqState")))
     });
 })();

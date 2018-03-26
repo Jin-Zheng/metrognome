@@ -57,7 +57,7 @@ var api = (function(){
     };
 
     module.upload = function(title, file, callback){
-        sendFiles('post', '/file/', {title, 'file': file, 'username':getCookie('username')}, callback);
+        sendFiles('post', '/file/', {title, 'file': file, 'username': api.getCookie('username')}, callback);
     };
 
 // ################################# USERS ##################################
