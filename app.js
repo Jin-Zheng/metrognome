@@ -11,6 +11,8 @@ const cookie = require('cookie');
 const crypto = require('crypto');
 const session = require('express-session');
 const validator = require('validator');
+const MongoDBStore = require('connect-mongodb-session')(session);
+const assert = require('assert');
 
 const mongo = require('mongodb');
 const MongoClient = require('mongodb').MongoClient;
@@ -47,6 +49,20 @@ audioconcat(songs)
 
 
 const app = express();
+var store = new MongoDBStore(
+    {
+    uri: 'mongodb://admin:admin@ds041678.mlab.com:41678/jindennisjubin-cscc09',
+    databaseName: 'jindennisjubin-cscc09',
+    collection: 'session'//,
+    //clear_interval:1000 * 60 * 60 * 24 * 7
+});
+// Catch errors
+// From https://www.npmjs.com/package/connect-mongodb-session
+store.on('error', function(error) {
+    assert.ifError(error);
+    assert.ok(false);
+});
+
 app.use(favicon(path.join(__dirname, '/frontend/media/', 'favicon.ico')));
 
 app.use(passport.initialize());
@@ -124,7 +140,11 @@ function generateHash(password, salt){
 }
 app.use(session({
     secret: 'I dont know what goes here',
-    resave: false,
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
+    },
+    store: store,
+    resave: true,
     saveUninitialized: true,
 }));
 
@@ -158,6 +178,7 @@ var checkId = function(req,res,next){
 app.use(function(req,res,next){
     var cookies = cookie.parse(req.headers.cookie || '');
     req.username = (req.session.username)? req.session.username:cookies.username;
+    req.facebookID = (req.session.facebookID)? req.session.facebookID:cookies.facebookID;
     next();
 })
 
@@ -233,21 +254,21 @@ app.get('/auth/facebook/callback',
 
 // Get user information
 app.get('/users/info/', function(req, res, next){
-    if (req.query.username && req.query.username !== '') {
-        db.collection('users').findOne({_id: req.query.username}, function(err, user){
+    if (req.session.username) {
+        db.collection('users').findOne({_id: req.session.username}, function(err, user){
             if (err) return res.status(500).end(JSON.stringify(err));
-            if (!user) return res.status(404).end("User #" + user.username + " does not exists");
+            if (!user) return res.status(404).end("User #" + req.session.username + " does not exists");
             return res.json(user);
         });
-    } else if(req.query.facebookID && req.query.facebookID !== '')
-        db.collection('users').findOne({facebookID: req.query.facebookID}, function(err, user){
+    } else if(req.session.facebookID)
+        db.collection('users').findOne({facebookID: req.session.facebookID}, function(err, user){
             if (err) return res.status(500).end(JSON.stringify(err));
-            if (!user) return res.status(404).end("Facebook User #" + user.facebookID + " does not exists");
+            if (!user) return res.status(404).end("Facebook User #" + req.session.facebookID + " does not exists");
             return res.json(user);
         });
 })
 
-// Update user info
+// Update user info of current user logged in
 app.put('/users/info/', function(req, res, next){
     var user = req.body;
     if(user.password) {
@@ -257,10 +278,10 @@ app.put('/users/info/', function(req, res, next){
         user.salt = salt;
         user.saltedHash = saltedHash;
     }
-    if(user.facebookID && user.facebookID !== '') {
-        db.collection('users').findOne({facebookID: user.facebookID}, function(err, facebookFound){
+    if(req.session.facebookID) {
+        db.collection('users').findOne({facebookID: req.session.facebookID}, function(err, facebookFound){
             if (err) return res.status(500).end(JSON.stringify(err));
-            if (!facebookFound) return res.status(404).end("Facebook User #" + user.facebookID + " does not exists");
+            if (!facebookFound) return res.status(404).end("Facebook User #" + req.session.facebookID + " does not exists");
             //Do not want to update id so delete
             delete user['_id'];
             db.collection('users').update({facebookID: user.facebookID}, {$set: user} , function(err, result){
@@ -269,10 +290,10 @@ app.put('/users/info/', function(req, res, next){
             });
         });
     }
-    else if (user._id && user._id != '') {
-        db.collection('users').findOne({_id: user._id}, function(err, found){
+    else if (req.session.username) {
+        db.collection('users').findOne({_id: req.session.username}, function(err, found){
             if (err) return res.status(500).end(JSON.stringify(err));
-            if (!found) return res.status(404).end("User #" + user._id + " does not exists");
+            if (!found) return res.status(404).end("User #" + req.session.username + " does not exists");
             db.collection('users').update({_id: user._id}, {$set: user} , function(err, result){
                 if (err) return res.status(500).end(JSON.stringify(err));
                 return res.json("User has been updated");
@@ -282,11 +303,11 @@ app.put('/users/info/', function(req, res, next){
 })
 
 // Check whether password is equal to user password
-app.post('/users/passCheck/:username', checkUsernameParam, function(req, res, next){
+app.post('/users/passCheck/', function(req, res, next){
     var password = req.body.password;
-    db.collection('users').findOne({_id: req.params.username}, function(err, user){
+    db.collection('users').findOne({_id: req.session.username}, function(err, user){
         if (err) return res.status(500).end(err);
-        if (!user) return res.status(404).end("User #" + req.params.username + " does not exists");
+        if (!user) return res.status(404).end("User #" + req.session.username + " does not exists");
         var salt = user.salt;
         var currSaltedHash = user.saltedHash;
         var saltedHash = generateHash(password, salt);
@@ -320,9 +341,8 @@ app.post('/signup/',checkUsername, function(req, res, next) {
 
         db.collection('users').insert(newUser, function(err, result){
             if (err) return console.log(err);
-            req.session.username = newUser;
+            req.session.username = newUser._id;
             // initialize cookie
-
             res.setHeader('Set-Cookie', cookie.serialize('username', username, {
                   path : '/',
                   maxAge: 60 * 60 * 24 * 7

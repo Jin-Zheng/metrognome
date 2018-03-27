@@ -69,13 +69,13 @@ var api = (function(){
     };
 
     module.getUserInfo = function(username, facebookID, callback){
-        send("GET", "/users/info/?username=" + username +"&facebookID="+facebookID ,null , callback);
+        send("GET", "/users/info/",null , callback);
     };
     module.updateUserInfo = function(userInfo, callback){
         send("PUT", "/users/info/", userInfo , callback);
     };
-    module.checkPassword = function(userID, password, callback){
-        send("POST", "/users/passCheck/" + userID + "/", {password:password} , callback);
+    module.checkPassword = function(password, callback){
+        send("POST", "/users/passCheck/", {password:password} , callback);
     };
 
 // ################################# BEATS ##################################
