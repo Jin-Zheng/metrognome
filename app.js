@@ -407,10 +407,13 @@ app.post('/beat/',isAuthenticated,function(req,res,next){
 });
 
 //get beat by id
-app.get('/beat/:id',checkId,isAuthenticated,function(req,res,next){
-    db.collection('beats').findOne({_id:req.params.id},function(err,beat){
+app.get('/beat/:id',isAuthenticated,function(req,res,next){
+    var ObjectId = require('mongodb').ObjectId;
+    var id = req.params.id;
+    var o_id = new ObjectId(id);
+    db.collection('beats').findOne({_id:o_id},function(err,beat){
         if(err) return res.status(500).end(err);
-        if(beat === null) return res.status(404).end("No beat with that id exists");
+        if(beat === null) return res.status(404).end("Beat with that id: "+req.params.id+" doesn't exist");
         else{
             return res.json(beat);
         }
@@ -433,23 +436,25 @@ app.get('/beat/private/',isAuthenticated,function(req,res,next){
 });
 
 //get all public beat ids
-app.get('/beat/public/',isAuthenticated,function(req,res,next){
+app.get('/beat/public/popular',isAuthenticated,function(req,res,next){
     var allBeats = [];
-    db.collection('beats').find({publicBool:true}).sort({upvotes:1}).exec(function(err,result){
+    db.collection('beats').find({publicBool:true},{username:1}).sort({upvotes:-1}).limit(24).toArray(function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("No public beats found");
         else{
-            for(var i=0;i<result.length;i++){
-                allBeats.push(result[i]._id);
-            }
-            return res.json(allBeats);
+            return res.json(result);
+            
         }
     });
-});
+}); 
+
 
 //delete beat by id
 app.delete('/beat/:id/',checkId,isAuthenticated,function(req,res,next){
-    db.collection('beats').findOne({_id:req.params.id},function(err,result){
+    var ObjectId = require('mongodb').ObjectId;
+    var id = req.params.id;
+    var o_id = new ObjectId(id);
+    db.collection('beats').findOne({_id:o_id},function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("Beat id not found");
         else{
@@ -461,6 +466,14 @@ app.delete('/beat/:id/',checkId,isAuthenticated,function(req,res,next){
             });
         }
     });
+});
+
+
+app.patch('/beat/upvote/:id',isAuthenticated,function(req,res,next){
+    var ObjectId = require('mongodb').ObjectId;
+    var id = req.params.id;
+    var o_id = new ObjectId(id);
+    db.collection('beats').update({_id:o_id},{$inc: {upvotes:1}}); 
 });
 
 // ################################# COMMENTS ##################################
@@ -484,19 +497,20 @@ app.post('/comment/',sanitizeContent,isAuthenticated,function(req,res,next){
 //modify later to return based on timestamp
 app.get('/comment/:id/',checkId,isAuthenticated,function(req,res,next){
     var comments = []
-    db.collection('comments').find({beatId:req.params.id}).exec(function(err,result){
+    db.collection('comments').find({beatId:req.params.id}).toArray(function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("no comments for this beat found");
         else{
-            if(!req.query.offset) req.query.offset=0;
-            //return only 10 comments at most;
-            return res.json(result.splice(req.query.offset,req.query.offset+10));
+            return res.json(result);
         }
     });
 });
 
 app.delete('/comment/:id/',checkId,isAuthenticated,function(req,res,next){
-    db.collection('comments').findOne({_id:req.params.id},function(err,result){
+    var ObjectId = require('mongodb').ObjectId;
+    var id = req.params.id;
+    var o_id = new ObjectId(id);
+    db.collection('comments').findOne({_id:o_id},function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("comment id not found");
         else{
@@ -505,10 +519,10 @@ app.delete('/comment/:id/',checkId,isAuthenticated,function(req,res,next){
                 else{
                     res.json(result);
                 }
-            })
+            });
         }
-    })
-})
+    });
+});
 
 app.get('/', (req, res) => {
   var cursor = db.collection('users').find();

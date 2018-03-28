@@ -25,12 +25,12 @@
 		var sequencerState = {};
 			//use beat sequencer to load the beats here
 		var audioFiles = {
-		s0: [new Audio("/file/kick1.mp3"), 'Bass'],
-		s1: [new Audio("/file/snare.mp3"), 'Snare'],
-		s2: [new Audio("/file/rimshot.mp3"), 'Rim'],
-		s3: [new Audio("/file/cl_hihat.mp3"), 'High Hat'],
-		s4: [new Audio("/file/tom1.mp3"), 'Tom'],
-		s5: [new Audio("/file/crashcym.mp3"), 'Crash']
+		s0: [new Audio("/file/kick1.mp3"), 'Bass', "/file/kick1.mp3"],
+		s1: [new Audio("/file/snare.mp3"), 'Snare',"/file/snare.mp3"],
+		s2: [new Audio("/file/rimshot.mp3"), 'Rim',"/file/rimshot.mp3"],
+		s3: [new Audio("/file/cl_hihat.mp3"), 'HiHat',"/file/cl_hihat.mp3"],
+		s4: [new Audio("/file/tom1.mp3"), 'Tom',"/file/tom1.mp3"],
+		s5: [new Audio("/file/crashcym.mp3"), 'Crash',"/file/crashcym.mp3"]
 		};			           
 			
 			
@@ -158,7 +158,7 @@
 						<input id="volume" class="slider" type="range" min="0" max="100" value="100">
 					</div>
 					<div class="col-5"></div>`
-				if (api.getCurrentUser() !== null && api.getCurrentUser() !== ''){
+				if ((api.getCookie("facebookID") !== null && api.getCookie("facebookID") !== '' || (api.getCookie("username") !== null && api.getCookie("username") !== ''))){
 					draw +=`
 						<button type="button" id="save" class="btn btn-custom controller btn-save p-1" data-toggle="collapse" data-target="#save_form"></button>
 						<div id="save_form" class="collapse">
@@ -222,7 +222,7 @@
 				volume = this.value;
 				self.setVolume(volume);
 			});
-			if (api.getCurrentUser() !== null && api.getCurrentUser() !== ''){
+			if ((api.getCookie("facebookID") !== null && api.getCookie("facebookID") !== '' || (api.getCookie("username") !== null && api.getCookie("username") !== ''))){
 				document.querySelector('#save_form').addEventListener('submit', function(e){
 					e.preventDefault();
 					var title = document.querySelector('#beat_title').value;
@@ -238,6 +238,15 @@
 		this.playBeat = function(beatInfo){
 			//self.drawSequencer();
 			document.querySelector('#reset').click();
+			//reset the audioFiles with saved sound
+			audioFiles = {
+				s0: [new Audio(beatInfo.beatSequence['s0'][0][2]),beatInfo.beatSequence['s0'][0][1]],
+				s1: [new Audio(beatInfo.beatSequence['s1'][0][2]),beatInfo.beatSequence['s1'][0][1]],
+				s2: [new Audio(beatInfo.beatSequence['s2'][0][2]),beatInfo.beatSequence['s2'][0][1]],
+				s3: [new Audio(beatInfo.beatSequence['s3'][0][2]),beatInfo.beatSequence['s3'][0][1]],
+				s4: [new Audio(beatInfo.beatSequence['s4'][0][2]),beatInfo.beatSequence['s4'][0][1]],
+				s5: [new Audio(beatInfo.beatSequence['s5'][0][2]),beatInfo.beatSequence['s5'][0][1]]
+			};
 			self.drawController();
 			self.drawSequencer();
 			tempo = beatInfo.tempo;
@@ -256,22 +265,14 @@
 				playButton.click();
 				document.querySelector('#reset').click();
 			}
-			//reset the audioFiles as well
-			var audioFiles = {
-			s0: beatInfo.beatSequence['s0'][0],
-			s1: beatInfo.beatSequence['s1'][0],
-			s2: beatInfo.beatSequence['s2'][0],
-			s3: beatInfo.beatSequence['s3'][0],
-			s4: beatInfo.beatSequence['s4'][0],
-			s5: beatInfo.beatSequence['s5'][0]
-			};	
+			
+				
 			//loop through sequenced beats and update html
 			for(var i in beatInfo.beatSequence){
-			//console.log(i);
-				for(var j = 0; j<beatInfo.beatSequence[i][1].length;j++){
+				for(var j in beatInfo.beatSequence[i][1]){
 					//console.log(beatInfo.beatSequence[i][1][j]);
 					if(beatInfo.beatSequence[i][1][j]){
-						document.querySelector('#'+i).querySelector('#step'+j).classList.add('play');
+						document.querySelector('#'+i).querySelector('#'+j).classList.add('play');
 					}
 				
 				}

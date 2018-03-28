@@ -15,9 +15,15 @@ app.controller("CommentController", function($scope, $location) {
                 $scope.lastPage = false;
                             
             
-                console.log($scope.comments);
                 $scope.deleteAccess = function(username) {
-                    var user = api.getCurrentUser()
+                    var user = "";
+                    if ((api.getCookie("facebookID") !== null && api.getCookie("facebookID") !== '')){
+                         user = api.getCookie("facebookID");
+                    }else{
+                        if((api.getCookie("username") !== null && api.getCookie("username") !== '')){
+                            user = api.getCookie("username");
+                        }
+                    }
                     return  user == username ? true : false;
                 }
             
