@@ -370,7 +370,7 @@ app.post('/signin/', checkUsername,function (req, res, next) {
             path : '/',
             maxAge: 60 * 60 * 24 * 7,
             secure: true,
-            maxAge: 60 * 60 * 24 * 7
+            sameSite: 'lax'
         }));
         return res.json("user " + username + " signed in");
     });
