@@ -48,7 +48,7 @@
 			var draw = ``;
 			// Draw row
 			for (var i in audioFiles){
-				sequencerState[i] = [audioFiles[i], []];
+				sequencerState[i] = [audioFiles[i], {}];
 				draw += `<div id=${i} class="row m-1">`;
 				// audioFile playing + controls
 				draw +=`
@@ -58,7 +58,7 @@
 				// steps
 				for (var j = 0; j < steps; j++){
 					draw += `<div id=${'step' + j} class="sequencer_step-xl btn col-auto color-4"></div>`;
-					sequencerState[i][1].push(false);
+					sequencerState[i][1]['step'+j]= false;
 				}
 				draw += '</div>';
 				sequencer.innerHTML = draw;
@@ -97,8 +97,20 @@
 				});
 			})
 			document.querySelectorAll('.sequencer_step-xl').forEach(function(elmt){
+				elmt.onmouseenter = function(e){
+					if(e.buttons ==1){
+						if(!this.classList.contains('play')){
+							sequencerState[elmt.parentNode.id][1][elmt.id] = !sequencerState[elmt.parentNode.id][1][elmt.id];
+							this.classList.add('play');
+						}
+						else{
+							sequencerState[elmt.parentNode.id][1][elmt.id] = !sequencerState[elmt.parentNode.id][1][elmt.id];
+							this.classList.remove('play');
+						}
+					}
+				}
 				elmt.addEventListener('click', function () {
-					sequencerState[elmt.parentNode.id][1][elmt.id.split('step')[1]] = true;
+					sequencerState[elmt.parentNode.id][1][elmt.id] = !sequencerState[elmt.parentNode.id][1][elmt.id];
 					this.classList.toggle('play');
 				});
 			});
@@ -193,16 +205,16 @@
 					clearInterval(looping);
 					looping = false;
 				}
-			})
+			});
 			document.querySelector('#reset').addEventListener('click', function () {
 				clearInterval(looping);
 				looping = false;
 				self.reset();
 				beat = 0;
-			})
+			});
 			document.querySelector('#previous').addEventListener('click', function () {
 				beat = 0;
-			})
+			});
 			document.querySelector('#tempo').addEventListener('input', function(){
 				document.querySelector('#tempo_val').innerHTML = this.value;
 				tempo = this.value;
