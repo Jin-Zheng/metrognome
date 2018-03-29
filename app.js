@@ -141,6 +141,9 @@ function generateHash(password, salt){
 app.use(session({
     secret: 'I dont know what goes here',
     cookie: {
+        secure: true, // Only send over https
+        httpOnly: true, // Client side cannot access cookie
+        sameSite: 'lax', // protect from CSRF request
         maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
     },
     store: store,
@@ -180,12 +183,6 @@ app.use(function(req,res,next){
     req.username = (req.session.username)? req.session.username:cookies.username;
     req.facebookID = (req.session.facebookID)? req.session.facebookID:cookies.facebookID;
     next();
-})
-
-
-// ACME Challenge for cert
-app.get('/.well-known/acme-challenge/LYNmcrgBFFYeuc7x0YHnc-Q6FGqFClBsCFrS8dnOPnM', function(req, res) {
-  res.send('LYNmcrgBFFYeuc7x0YHnc-Q6FGqFClBsCFrS8dnOPnM.AQciWrRfHCkcs36nP7jH8NCOxmGHVwiQGQzKeVoO3Mw');
 })
 
 // Serve frontend
@@ -246,8 +243,10 @@ app.get('/auth/facebook/callback',
         req.session.facebookID = req.user.id;
         // initialize cookie
         res.setHeader('Set-Cookie', cookie.serialize('facebookID', req.user.id, {
-              path : '/',
-              maxAge: 60 * 60 * 24 * 7
+            path : '/',
+            secure: true,
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7
         }));
         res.redirect('/');
 });
@@ -344,8 +343,10 @@ app.post('/signup/',checkUsername, function(req, res, next) {
             req.session.username = newUser._id;
             // initialize cookie
             res.setHeader('Set-Cookie', cookie.serialize('username', username, {
-                  path : '/',
-                  maxAge: 60 * 60 * 24 * 7
+                path : '/',
+                secure: true,
+                sameSite: 'lax',
+                maxAge: 60 * 60 * 24 * 7
             }));
 
             return res.json("user " + username + " signed up");
@@ -366,8 +367,10 @@ app.post('/signin/', checkUsername,function (req, res, next) {
         req.session.username = user._id;
         // initialize cookie
         res.setHeader('Set-Cookie', cookie.serialize('username', username, {
-              path : '/',
-              maxAge: 60 * 60 * 24 * 7
+            path : '/',
+            maxAge: 60 * 60 * 24 * 7,
+            secure: true,
+            maxAge: 60 * 60 * 24 * 7
         }));
         return res.json("user " + username + " signed in");
     });
@@ -376,10 +379,14 @@ app.post('/signin/', checkUsername,function (req, res, next) {
 app.get('/signout/', function (req, res, next) {
     req.session.destroy();
     res.setHeader('Set-Cookie', [cookie.serialize('facebookID', '', {
-          path : '/',
+        path : '/',
+        secure: true,
+        sameSite: 'lax',
           maxAge: 60 * 60 * 24 * 7 // 1 week in number of seconds
     }),cookie.serialize('username', '', {
         path : '/',
+        secure: true,
+        sameSite: 'lax',
      maxAge: 60 * 60 * 24 * 7 // 1 week in number of seconds
     })]);
     req.logout();
