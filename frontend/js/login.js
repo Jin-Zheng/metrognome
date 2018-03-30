@@ -10,7 +10,16 @@
                 var password =document.querySelector("form [name=password]").value;
                 var action =document.querySelector("form [name=action]").value;
                 api[action](username, password, function(err, res){
-                    if (err) document.querySelector('.alert').innerHTML = "Access denied: Wrong username or password";
+                    if (err) {
+                        if (err.substring(1,4) === '401')
+                            document.querySelector('.alert').innerHTML = "Invalid username or password";
+                        else if(err.substring(1,4) === '409')
+                            document.querySelector('.alert').innerHTML = "Username already exist";
+                        else if(err.substring(1,4) === '400')
+                            document.querySelector('.alert').innerHTML = "Username can only contain alphabet and interger characters";
+                        else
+                            document.querySelector('.alert').innerHTML = err;
+                    }
                     else if(window.location.protocol + window.location.host + "/" + "profile.html" === window.location.href)
                         window.location = window.location.href;
                     else window.location = '';
