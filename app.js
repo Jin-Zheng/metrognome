@@ -177,6 +177,12 @@ var checkId = function(req,res,next){
     next();
 }
 
+var checkUserInfo = function(req,res,next){
+    if(!validator.isAlphanumeric(req.body.firstName)) return res.status(400).end("bad input for first name");
+    if(!validator.isAlphanumeric(req.body.lastName)) return res.status(400).end("bad input for last name");
+    if(!validator.isEmail(req.body.email)) return res.status(400).end("bad email input");
+    next();
+}
 
 app.use(function(req,res,next){
     var cookies = cookie.parse(req.headers.cookie || '');
@@ -268,7 +274,7 @@ app.get('/users/info/', function(req, res, next){
 })
 
 // Update user info of current user logged in
-app.put('/users/info/', function(req, res, next){
+app.put('/users/info/',checkUserInfo, function(req, res, next){
     var user = req.body;
     if(user.password) {
         var salt = crypto.randomBytes(16).toString('base64');
