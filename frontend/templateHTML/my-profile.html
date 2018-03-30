@@ -8,7 +8,6 @@
     <p> Set email : <input type="email" name="email" ng-model="email" placeholder="{{emailPlaceholder}}"></p>
     <p class="text-danger" ng-show="myForm.email.$error.email">Invalid email address.</p>
     <h6>Set new password</h6>
-    {{facebookID!=''}}
 
     <p> Old password : <input type="password" ng-model="oldpass" name="oldpass" id="oldpass" placeholder="Enter old password" ng-disabled="facebookID!=''"/></p>
     <p class='text-danger' ng-show='myForm.pass2.$error.empty'>Please enter old password</p>
