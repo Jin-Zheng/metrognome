@@ -104,14 +104,14 @@
         </div>
         
       </div>
-      <div class="row margin15px" id="nextprevbutton">
+      <div ng-cloak ng-show="loggedin" class="row margin15px" id="nextprevbutton">
         <div class="col offset-5">
           <button type="button" ng-disabled="firstPage" ng-click="goBack()" class="btn btn-secondary">Previous</button>
           <button type="button" ng-disabled="lastPage" ng-click="goForward()" class="btn btn-secondary">Next</button>
         </div>
       </div>
         
-      <form ng-submit="submit()" class="col" id="textform">
+      <form  ng-cloak ng-show="loggedin" ng-submit="submit()" class="col" id="textform">
         <div class="row margin15px">
             <textarea class="col" ng-model="commentSubmit" placeholder="Enter your message..."></textarea>
         </div>

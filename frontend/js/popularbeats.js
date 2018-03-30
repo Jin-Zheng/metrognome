@@ -2,6 +2,7 @@
 (function(){
 	"use strict";
 
+	//function to trigger animation of the dots when the arrows are clicked
 	function animateDot(increment) {
 		var dots = [].slice.call(document.querySelectorAll( '.dotstyle > ul > li' ));
 		var currentDot = document.querySelector('li.current');
@@ -93,7 +94,7 @@
 			document.querySelectorAll('.btn-change').forEach(function(elmt){
 				elmt.addEventListener('click', function(){
 					currChange = elmt.id.split('change')[0];
-					//loadFilePicker();
+					
 				});
 			})
 			document.querySelectorAll('.sequencer_step-xl').forEach(function(elmt){
@@ -252,12 +253,12 @@
 			document.querySelector('#reset').click();
 			//reset the audioFiles with saved sound
 			audioFiles = {
-				s0: [new Audio(beatInfo.beatSequence['s0'][0][2]),beatInfo.beatSequence['s0'][0][1]],
-				s1: [new Audio(beatInfo.beatSequence['s1'][0][2]),beatInfo.beatSequence['s1'][0][1]],
-				s2: [new Audio(beatInfo.beatSequence['s2'][0][2]),beatInfo.beatSequence['s2'][0][1]],
-				s3: [new Audio(beatInfo.beatSequence['s3'][0][2]),beatInfo.beatSequence['s3'][0][1]],
-				s4: [new Audio(beatInfo.beatSequence['s4'][0][2]),beatInfo.beatSequence['s4'][0][1]],
-				s5: [new Audio(beatInfo.beatSequence['s5'][0][2]),beatInfo.beatSequence['s5'][0][1]]
+				s0: [new Audio(beatInfo.beatSequence['s0'][0][2]),beatInfo.beatSequence['s0'][0][1],beatInfo.beatSequence['s0'][0][2]],
+				s1: [new Audio(beatInfo.beatSequence['s1'][0][2]),beatInfo.beatSequence['s1'][0][1],beatInfo.beatSequence['s0'][0][2]],
+				s2: [new Audio(beatInfo.beatSequence['s2'][0][2]),beatInfo.beatSequence['s2'][0][1],beatInfo.beatSequence['s0'][0][2]],
+				s3: [new Audio(beatInfo.beatSequence['s3'][0][2]),beatInfo.beatSequence['s3'][0][1],beatInfo.beatSequence['s0'][0][2]],
+				s4: [new Audio(beatInfo.beatSequence['s4'][0][2]),beatInfo.beatSequence['s4'][0][1],beatInfo.beatSequence['s0'][0][2]],
+				s5: [new Audio(beatInfo.beatSequence['s5'][0][2]),beatInfo.beatSequence['s5'][0][1],beatInfo.beatSequence['s0'][0][2]]
 			};
 			self.drawController();
 			self.drawSequencer();
@@ -267,7 +268,6 @@
 				looping = setInterval(self.step, 60000/tempo/4);
 			}
 			document.querySelector('#tempo_val').innerHTML =tempo;
-			//console.log(beatInfo.se) 2");
 			var playButton = document.querySelector('#playpause');
 			//if play button shows just clear the beat selection
 			if(playButton.classList.contains('btn-play')){
@@ -311,12 +311,7 @@
 						$scope.beats = [];
 						$scope.currentPage = 0;
 						$scope.numOfDots = [];//using this array to create the dot pagination
-						//console.log($scope.superBeats);
-			
-						//getBeats.getMessages().then(function(messages){
-							//$scope.superBeats = messages;
-							//console.log($scope.superBeats);
-			
+									
 			
 						$scope.Dots = Math.min(Math.ceil($scope.superBeats.length / 4),6);
 						
@@ -326,7 +321,7 @@
 						$scope.$watch('currentPage', function() {  
 							$scope.beats = $scope.superBeats.slice($scope.currentPage*4,$scope.currentPage*4+4);
 						});
-						//});
+						
 						
 						//using this for left button pagination
 						$scope.goBack = function () {
