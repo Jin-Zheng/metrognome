@@ -182,7 +182,6 @@
                 // visualizer
                 for (var i in audioFiles){
                     for (var j = 0 ; j < steps; j++){
-                        console.log(document.querySelector('#' + i + ' #step' + j))
                         document.querySelector('#' + i + ' #step' + j).classList.remove('playing');
                     }
                 }

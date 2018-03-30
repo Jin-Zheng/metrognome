@@ -395,20 +395,6 @@ app.post('/beat/',isAuthenticated,function(req,res,next){
     });
 });
 
-//get beat by id
-app.get('/beat/:id',isAuthenticated,function(req,res,next){
-    var ObjectId = require('mongodb').ObjectId;
-    var id = req.params.id;
-    var o_id = new ObjectId(id);
-    db.collection('beats').findOne({_id:o_id},function(err,beat){
-        if(err) return res.status(500).end(err);
-        if(beat === null) return res.status(404).end("Beat with that id: "+req.params.id+" doesn't exist");
-        else{
-            return res.json(beat);
-        }
-    });
-});
-
 //get beat id by owner
 app.get('/beat/private/',isAuthenticated,function(req,res,next){
     var usersBeats = [];
@@ -437,6 +423,19 @@ app.get('/beat/public/popular',isAuthenticated,function(req,res,next){
     });
 }); 
 
+//get beat by id
+app.get('/beat/:id',isAuthenticated,function(req,res,next){
+    var ObjectId = require('mongodb').ObjectId;
+    var id = req.params.id;
+    var o_id = new ObjectId(id);
+    db.collection('beats').findOne({_id:o_id},function(err,beat){
+        if(err) return res.status(500).end(err);
+        if(beat === null) return res.status(404).end("Beat with that id: "+req.params.id+" doesn't exist");
+        else{
+            return res.json(beat);
+        }
+    });
+});
 
 //get beat by id
 app.get('/beat/:id',isAuthenticated,function(req,res,next){
