@@ -44,7 +44,7 @@
             };
             // If user want's to change password check if the old password is correct
             if ($scope.pass1 !== '' && $scope.oldpass !== '' && $scope.pass1 && $scope.oldpass) {
-                api.checkPassword($scope._id, $scope.oldpass, function(err, correctPass){
+                api.checkPassword($scope.oldpass, function(err, correctPass){
                     // Update if user has entered the correct password
                     if(correctPass) {
                         user.password = $scope.pass1;

@@ -157,6 +157,18 @@
                     });
                 })
                 document.querySelectorAll('.sequencer_step-xl').forEach(function(elmt){
+                    elmt.onmouseenter = function(e){
+                        if(e.buttons ==1){
+                            if(!this.classList.contains('play')){
+                                sequencerState[elmt.parentNode.id][1][elmt.id] = !sequencerState[elmt.parentNode.id][1][elmt.id];
+                                this.classList.add('play');
+                            }
+                            else{
+                                sequencerState[elmt.parentNode.id][1][elmt.id] = !sequencerState[elmt.parentNode.id][1][elmt.id];
+                                this.classList.remove('play');
+                            }
+                        }
+                    }
                     elmt.addEventListener('click', function () {
                         sequencerState[elmt.parentNode.id][1][elmt.id] = !ss[elmt.parentNode.id][1][elmt.id];
                         this.classList.toggle('play');

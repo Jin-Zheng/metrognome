@@ -11,6 +11,8 @@ const cookie = require('cookie');
 const crypto = require('crypto');
 const session = require('express-session');
 const validator = require('validator');
+const MongoDBStore = require('connect-mongodb-session')(session);
+const assert = require('assert');
 
 const mongo = require('mongodb');
 const MongoClient = require('mongodb').MongoClient;
@@ -23,6 +25,20 @@ const FacebookStrategy = require('passport-facebook').Strategy;
 const config = require('./configuration/config');
 
 const app = express();
+var store = new MongoDBStore(
+    {
+    uri: 'mongodb://admin:admin@ds041678.mlab.com:41678/jindennisjubin-cscc09',
+    databaseName: 'jindennisjubin-cscc09',
+    collection: 'session'//,
+    //clear_interval:1000 * 60 * 60 * 24 * 7
+});
+// Catch errors
+// From https://www.npmjs.com/package/connect-mongodb-session
+store.on('error', function(error) {
+    assert.ifError(error);
+    assert.ok(false);
+});
+
 app.use(favicon(path.join(__dirname, '/frontend/media/', 'favicon.ico')));
 
 app.use(passport.initialize());
@@ -100,7 +116,14 @@ function generateHash(password, salt){
 }
 app.use(session({
     secret: 'I dont know what goes here',
-    resave: false,
+    cookie: {
+        secure: true, // Only send over https
+        httpOnly: true, // Client side cannot access cookie
+        sameSite: 'lax', // protect from CSRF request
+        maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
+    },
+    store: store,
+    resave: true,
     saveUninitialized: true,
 }));
 
@@ -130,17 +153,18 @@ var checkId = function(req,res,next){
     next();
 }
 
+var checkUserInfo = function(req,res,next){
+    if(!validator.isAlphanumeric(req.body.firstName)) return res.status(400).end("bad input for first name");
+    if(!validator.isAlphanumeric(req.body.lastName)) return res.status(400).end("bad input for last name");
+    if(!validator.isEmail(req.body.email)) return res.status(400).end("bad email input");
+    next();
+}
 
 app.use(function(req,res,next){
     var cookies = cookie.parse(req.headers.cookie || '');
     req.username = (req.session.username)? req.session.username:cookies.username;
+    req.facebookID = (req.session.facebookID)? req.session.facebookID:cookies.facebookID;
     next();
-})
-
-
-// ACME Challenge for cert
-app.get('/.well-known/acme-challenge/LYNmcrgBFFYeuc7x0YHnc-Q6FGqFClBsCFrS8dnOPnM', function(req, res) {
-  res.send('LYNmcrgBFFYeuc7x0YHnc-Q6FGqFClBsCFrS8dnOPnM.AQciWrRfHCkcs36nP7jH8NCOxmGHVwiQGQzKeVoO3Mw');
 })
 
 // Serve frontend
@@ -201,30 +225,32 @@ app.get('/auth/facebook/callback',
         req.session.facebookID = req.user.id;
         // initialize cookie
         res.setHeader('Set-Cookie', cookie.serialize('facebookID', req.user.id, {
-              path : '/',
-              maxAge: 60 * 60 * 24 * 7
+            path : '/',
+            secure: true,
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7
         }));
         res.redirect('/');
 });
 
 // Get user information
 app.get('/users/info/', function(req, res, next){
-    if (req.query.username && req.query.username !== '') {
-        db.collection('users').findOne({_id: req.query.username}, function(err, user){
+    if (req.session.username) {
+        db.collection('users').findOne({_id: req.session.username}, function(err, user){
             if (err) return res.status(500).end(JSON.stringify(err));
-            if (!user) return res.status(404).end("User #" + user.username + " does not exists");
+            if (!user) return res.status(404).end("User #" + req.session.username + " does not exists");
             return res.json(user);
         });
-    } else if(req.query.facebookID && req.query.facebookID !== '')
-        db.collection('users').findOne({facebookID: req.query.facebookID}, function(err, user){
+    } else if(req.session.facebookID)
+        db.collection('users').findOne({facebookID: req.session.facebookID}, function(err, user){
             if (err) return res.status(500).end(JSON.stringify(err));
-            if (!user) return res.status(404).end("Facebook User #" + user.facebookID + " does not exists");
+            if (!user) return res.status(404).end("Facebook User #" + req.session.facebookID + " does not exists");
             return res.json(user);
         });
 })
 
-// Update user info
-app.put('/users/info/', function(req, res, next){
+// Update user info of current user logged in
+app.put('/users/info/',checkUserInfo, function(req, res, next){
     var user = req.body;
     if(user.password) {
         var salt = crypto.randomBytes(16).toString('base64');
@@ -233,10 +259,10 @@ app.put('/users/info/', function(req, res, next){
         user.salt = salt;
         user.saltedHash = saltedHash;
     }
-    if(user.facebookID && user.facebookID !== '') {
-        db.collection('users').findOne({facebookID: user.facebookID}, function(err, facebookFound){
+    if(req.session.facebookID) {
+        db.collection('users').findOne({facebookID: req.session.facebookID}, function(err, facebookFound){
             if (err) return res.status(500).end(JSON.stringify(err));
-            if (!facebookFound) return res.status(404).end("Facebook User #" + user.facebookID + " does not exists");
+            if (!facebookFound) return res.status(404).end("Facebook User #" + req.session.facebookID + " does not exists");
             //Do not want to update id so delete
             delete user['_id'];
             db.collection('users').update({facebookID: user.facebookID}, {$set: user} , function(err, result){
@@ -245,10 +271,10 @@ app.put('/users/info/', function(req, res, next){
             });
         });
     }
-    else if (user._id && user._id != '') {
-        db.collection('users').findOne({_id: user._id}, function(err, found){
+    else if (req.session.username) {
+        db.collection('users').findOne({_id: req.session.username}, function(err, found){
             if (err) return res.status(500).end(JSON.stringify(err));
-            if (!found) return res.status(404).end("User #" + user._id + " does not exists");
+            if (!found) return res.status(404).end("User #" + req.session.username + " does not exists");
             db.collection('users').update({_id: user._id}, {$set: user} , function(err, result){
                 if (err) return res.status(500).end(JSON.stringify(err));
                 return res.json("User has been updated");
@@ -258,11 +284,11 @@ app.put('/users/info/', function(req, res, next){
 })
 
 // Check whether password is equal to user password
-app.post('/users/passCheck/:username', checkUsernameParam, function(req, res, next){
+app.post('/users/passCheck/', function(req, res, next){
     var password = req.body.password;
-    db.collection('users').findOne({_id: req.params.username}, function(err, user){
+    db.collection('users').findOne({_id: req.session.username}, function(err, user){
         if (err) return res.status(500).end(err);
-        if (!user) return res.status(404).end("User #" + req.params.username + " does not exists");
+        if (!user) return res.status(404).end("User #" + req.session.username + " does not exists");
         var salt = user.salt;
         var currSaltedHash = user.saltedHash;
         var saltedHash = generateHash(password, salt);
@@ -296,12 +322,13 @@ app.post('/signup/',checkUsername, function(req, res, next) {
 
         db.collection('users').insert(newUser, function(err, result){
             if (err) return console.log(err);
-            req.session.username = newUser;
+            req.session.username = newUser._id;
             // initialize cookie
-
             res.setHeader('Set-Cookie', cookie.serialize('username', username, {
-                  path : '/',
-                  maxAge: 60 * 60 * 24 * 7
+                path : '/',
+                secure: true,
+                sameSite: 'lax',
+                maxAge: 60 * 60 * 24 * 7
             }));
 
             return res.json("user " + username + " signed up");
@@ -322,8 +349,10 @@ app.post('/signin/', checkUsername,function (req, res, next) {
         req.session.username = user._id;
         // initialize cookie
         res.setHeader('Set-Cookie', cookie.serialize('username', username, {
-              path : '/',
-              maxAge: 60 * 60 * 24 * 7
+            path : '/',
+            maxAge: 60 * 60 * 24 * 7,
+            secure: true,
+            sameSite: 'lax'
         }));
         return res.json("user " + username + " signed in");
     });
@@ -332,10 +361,14 @@ app.post('/signin/', checkUsername,function (req, res, next) {
 app.get('/signout/', function (req, res, next) {
     req.session.destroy();
     res.setHeader('Set-Cookie', [cookie.serialize('facebookID', '', {
-          path : '/',
+        path : '/',
+        secure: true,
+        sameSite: 'lax',
           maxAge: 60 * 60 * 24 * 7 // 1 week in number of seconds
     }),cookie.serialize('username', '', {
         path : '/',
+        secure: true,
+        sameSite: 'lax',
      maxAge: 60 * 60 * 24 * 7 // 1 week in number of seconds
     })]);
     req.logout();
@@ -362,6 +395,20 @@ app.post('/beat/',isAuthenticated,function(req,res,next){
     });
 });
 
+//get beat by id
+app.get('/beat/:id',isAuthenticated,function(req,res,next){
+    var ObjectId = require('mongodb').ObjectId;
+    var id = req.params.id;
+    var o_id = new ObjectId(id);
+    db.collection('beats').findOne({_id:o_id},function(err,beat){
+        if(err) return res.status(500).end(err);
+        if(beat === null) return res.status(404).end("Beat with that id: "+req.params.id+" doesn't exist");
+        else{
+            return res.json(beat);
+        }
+    });
+});
+
 //get beat id by owner
 app.get('/beat/private/',isAuthenticated,function(req,res,next){
     var usersBeats = [];
@@ -378,19 +425,18 @@ app.get('/beat/private/',isAuthenticated,function(req,res,next){
 });
 
 //get all public beat ids
-app.get('/beat/public/',isAuthenticated,function(req,res,next){
+app.get('/beat/public/popular',isAuthenticated,function(req,res,next){
     var allBeats = [];
-    db.collection('beats').find({publicBool:true}).sort({upvotes:1}).exec(function(err,result){
+    db.collection('beats').find({publicBool:true},{username:1}).sort({upvotes:-1}).limit(24).toArray(function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("No public beats found");
         else{
-            for(var i=0;i<result.length;i++){
-                allBeats.push(result[i]._id);
-            }
-            return res.json(allBeats);
+            return res.json(result);
+            
         }
     });
-});
+}); 
+
 
 //get beat by id
 app.get('/beat/:id',isAuthenticated,function(req,res,next){
@@ -408,7 +454,10 @@ app.get('/beat/:id',isAuthenticated,function(req,res,next){
 
 //delete beat by id
 app.delete('/beat/:id/',checkId,isAuthenticated,function(req,res,next){
-    db.collection('beats').findOne({_id: req.params.id},function(err,result){
+    var ObjectId = require('mongodb').ObjectId;
+    var id = req.params.id;
+    var o_id = new ObjectId(id);
+    db.collection('beats').findOne({_id:o_id},function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("Beat id not found");
         else{
@@ -420,6 +469,14 @@ app.delete('/beat/:id/',checkId,isAuthenticated,function(req,res,next){
             });
         }
     });
+});
+
+
+app.patch('/beat/upvote/:id',isAuthenticated,function(req,res,next){
+    var ObjectId = require('mongodb').ObjectId;
+    var id = req.params.id;
+    var o_id = new ObjectId(id);
+    db.collection('beats').update({_id:o_id},{$inc: {upvotes:1}}); 
 });
 
 // ################################# COMMENTS ##################################
@@ -443,19 +500,20 @@ app.post('/comment/',sanitizeContent,isAuthenticated,function(req,res,next){
 //modify later to return based on timestamp
 app.get('/comment/:id/',checkId,isAuthenticated,function(req,res,next){
     var comments = []
-    db.collection('comments').find({beatId:req.params.id}).exec(function(err,result){
+    db.collection('comments').find({beatId:req.params.id}).toArray(function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("no comments for this beat found");
         else{
-            if(!req.query.offset) req.query.offset=0;
-            //return only 10 comments at most;
-            return res.json(result.splice(req.query.offset,req.query.offset+10));
+            return res.json(result);
         }
     });
 });
 
 app.delete('/comment/:id/',checkId,isAuthenticated,function(req,res,next){
-    db.collection('comments').findOne({_id:req.params.id},function(err,result){
+    var ObjectId = require('mongodb').ObjectId;
+    var id = req.params.id;
+    var o_id = new ObjectId(id);
+    db.collection('comments').findOne({_id:o_id},function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("comment id not found");
         else{
@@ -464,10 +522,10 @@ app.delete('/comment/:id/',checkId,isAuthenticated,function(req,res,next){
                 else{
                     res.json(result);
                 }
-            })
+            });
         }
-    })
-})
+    });
+});
 
 app.get('/', (req, res) => {
   var cursor = db.collection('users').find();

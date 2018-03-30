@@ -29,24 +29,63 @@
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
     <div class="container">
-      <a class="navbar-brand" href="/">Home</a>
+      <a class="navbar-brand" href="/">Metro-Gnome</a>
+      <a class="navbar-nav navbar-text col-9 d-none"></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item" id="signout_button">
-            <a class="nav-link" href="/signout/">Log Out</a>
-          </li>
           <li class="nav-item" id="signin_button">
-            <a class="nav-link" href="#"  data-toggle="modal" data-target="#myModal" id="loginButton">Log In</a>
+            <a class="nav-link" data-toggle="modal" data-target="#login_modal">Log In</a>
+          </li>
+          <li class="nav-item" id="popularbeats">
+            <a class="nav-link" href="popularbeats.html" id="popularbeatsLink">Popular Beats</a>
+          </li>
+          <li class="nav-item" id="profile_button">
+            <a class="nav-link" href="profile.html" id="profileLink">Profile</a>
+          </li>
+          <li class="nav-item d-none" id="signout_button">
+            <a class="nav-link" href="/signout/">Log Out</a>
           </li>
         </ul>
       </div>
     </div>
   </nav>
 
+<!-- src: https://www.w3schools.com/bootstrap4/tryit.asp?filename=trybs_modal&stacked=h-->
+<div class="container">
+  <!-- The Modal -->
+  <div class="modal fade in" id="login_modal">
+      <div class="modal-dialog">
+          <div class="modal-content">
 
+              <!-- Modal Header -->
+              <div class="modal-header">
+                  <h2 class="col-11 modal-title text-center">Log In</h2>
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+              </div>
+
+              <form class="form-group">
+                  <!-- Modal body -->
+                  <div class="modal-body">
+                      <!-- Login body -->
+                      <input type="text" name="username" class="form-control" placeholder="Enter a username" required/>
+                      <input type="password" name="password" class="form-control" placeholder="Enter a password" required/>
+                      <br>
+                      <a  href="/auth/facebook"><div class="facebook-login" ></div></a>
+                  </div>
+                  <div class="alert"></div>
+                  <!-- Modal footer -->
+                  <div class="modal-footer">
+                      <button id="signin" name="action" class="btn btn-custom">Sign in</button>
+                      or <button id="signup" name="action" class="btn btn-custom">Sign up</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
 
 
   <div class="container" ng-controller="CommentController">
@@ -65,14 +104,14 @@
         </div>
         
       </div>
-      <div class="row margin15px">
+      <div ng-cloak ng-show="loggedin" class="row margin15px" id="nextprevbutton">
         <div class="col offset-5">
           <button type="button" ng-disabled="firstPage" ng-click="goBack()" class="btn btn-secondary">Previous</button>
           <button type="button" ng-disabled="lastPage" ng-click="goForward()" class="btn btn-secondary">Next</button>
         </div>
       </div>
         
-      <form ng-submit="submit()" class="col">
+      <form  ng-cloak ng-show="loggedin" ng-submit="submit()" class="col" id="textform">
         <div class="row margin15px">
             <textarea class="col" ng-model="commentSubmit" placeholder="Enter your message..."></textarea>
         </div>
@@ -109,7 +148,9 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
   <script src="js/api.js"></script>
   <script src="js/comments.js"></script>
-	
+  <script src="js/static.js"></script>
+  <script src="js/login.js"></script>
+
 </body>
 
 </html>
