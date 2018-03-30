@@ -2,12 +2,12 @@
 (function(){
     "use strict";
     window.addEventListener('load', function(){
-        var audio = new Crunker();
+        var audio = new Crunker(); // For file merging and concatenation
         var sequencerState = {};
         // Frontend tutorial src: https://github.com/renasboy/simple-audio-sequencer/blob/master/index.html
         // Audio Files storage and default files
         var audioFiles = {
-            s0: [new Audio("/file/kick1.mp3"), 'Bass', "/file/kick1.mp3"], // IM SURE STORING THIS IN LOCALSTORAGE IS A SECURITY HAZARD
+            s0: [new Audio("/file/kick1.mp3"), 'Bass', "/file/kick1.mp3"],
             s1: [new Audio("/file/snare.mp3"), 'Snare', "/file/snare.mp3"],
             s2: [new Audio("/file/rimshot.mp3"), 'Rim', "/file/rimshot.mp3"],
             s3: [new Audio("/file/cl_hihat.mp3"), 'HiHat', "/file/cl_hihat.mp3"],
@@ -27,15 +27,16 @@
         // Create a sequencer object
         var Sequencer = function () {
             var size = 'xl';
-            var self = this; // This is needed to reference its own functions recursively
+            var self = this; // This is needed to reference its own functions
             var looping = false;
             var beat = 0;
             var tempo = 120;
             var volume = 100;
             var steps = 16;
 
-            this.stateInit = function(){ // ADD SAVING TEMPO AND VOLUME TO LOCAL STORAGE TOO ******* REMIND ME IF SOMEONE SEES THIS
+            this.stateInit = function(){
                 var storageState = JSON.parse(localStorage.getItem("seqState"));
+                var storageTempo = localStorage.getItem('tempo');
                 if (storageState == null){
                     for (var i in audioFiles){
                         sequencerState[i] = [audioFiles[i], {}];
@@ -47,6 +48,9 @@
                 }
                 else {
                     sequencerState = storageState;
+                }
+                if (storageTempo != null){
+                    tempo = storageTempo;
                 }
             };
 
@@ -125,7 +129,7 @@
                 }
 
                 // Add event listeners
-                // Can't loop this because of closure? or something like that
+                // Can't loop this because of closure
                 document.querySelector('#s0').addEventListener('click', function(){
                     audioFiles.s0[0].currentTime = 0;
                     audioFiles.s0[0].play();
@@ -162,15 +166,17 @@
                             if(!this.classList.contains('play')){
                                 sequencerState[elmt.parentNode.id][1][elmt.id] = !sequencerState[elmt.parentNode.id][1][elmt.id];
                                 this.classList.add('play');
+                                localStorage.setItem('seqState', JSON.stringify(sequencerState));
                             }
                             else{
                                 sequencerState[elmt.parentNode.id][1][elmt.id] = !sequencerState[elmt.parentNode.id][1][elmt.id];
                                 this.classList.remove('play');
+                                localStorage.setItem('seqState', JSON.stringify(sequencerState));
                             }
                         }
                     };
                     elmt.addEventListener('click', function () {
-                        sequencerState[elmt.parentNode.id][1][elmt.id] = !ss[elmt.parentNode.id][1][elmt.id];
+                        sequencerState[elmt.parentNode.id][1][elmt.id] = !sequencerState[elmt.parentNode.id][1][elmt.id];
                         this.classList.toggle('play');
                         localStorage.setItem('seqState', JSON.stringify(sequencerState));
                     });
@@ -298,6 +304,7 @@
                 document.querySelector('#tempo').addEventListener('input', function(){
                     document.querySelector('#tempo_val').innerHTML = this.value;
                     tempo = this.value;
+                    localStorage.setItem('tempo', tempo);
                     if (looping) {
                         clearInterval(looping);
                         looping = setInterval(self.step, 60000 / tempo / 4);
@@ -360,7 +367,7 @@
                         api.getBeat(e.target.id, function(err, beat){
                             if (err) return alert(err);
                             sequencerState = beat.beatSequence;
-                            self.tempo = beat.tempo;
+                            tempo = parseInt(beat.tempo);
                             self.drawSequencer(sequencerState);
                             self.drawController();
                         });
