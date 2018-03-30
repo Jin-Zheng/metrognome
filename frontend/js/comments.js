@@ -1,3 +1,4 @@
+//// jshint esversion: 6
 var app = angular.module("popComment", []);
 
 app.controller("CommentController", function($scope, $location) {
@@ -85,8 +86,8 @@ app.controller("CommentController", function($scope, $location) {
                     };
                     //list of variables that being watched and updating page based on it
                     $scope.$watch('currentPage + numPerPage + comments', function() {
-                        var begin = (($scope.currentPage - 1) * $scope.numPerPage)
-                        , end = begin + $scope.numPerPage;
+                        var begin = (($scope.currentPage - 1) * $scope.numPerPage);
+                        var end = begin + $scope.numPerPage;
                         
                         $scope.disableButtons();
                         $scope.filteredComments = $scope.comments.slice(begin,end);
