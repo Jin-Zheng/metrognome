@@ -64,7 +64,7 @@
 				}
 			} );
 		} );
-	}	
+	}	;
 	// add to global namespace
 	window.DotNav = DotNav;
 

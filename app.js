@@ -100,7 +100,7 @@ const storage = new GridFSStorage({
         return {
             filename: file.originalname,
             metadata: req.body
-        }
+        };
     }
 });
 const upload = multer({ storage });
@@ -112,7 +112,7 @@ function generateSalt(){
 function generateHash(password, salt){
     var hash = crypto.createHmac('sha512', salt);
     hash.update(password);
-    return hash.digest('base64');;
+    return hash.digest('base64');
 }
 app.use(session({
     secret: 'I dont know what goes here',
@@ -135,37 +135,37 @@ var isAuthenticated = function(req, res, next) {
 var checkUsername = function(req,res,next){
     if(!validator.isAlphanumeric(req.body.username)) return res.status(400).end("bad input");
     next();
-}
+};
 
 var checkUsernameParam = function(req,res,next){
 	if(!validator.isAlphanumeric(req.params.username)) return res.status(400).end("bad input");
 	next();
-}
+};
 
 
 var sanitizeContent = function(req,res,next){
     req.body.content = validator.escape(req.body.content);
     next();
-}
+};
 
 var checkId = function(req,res,next){
     if(!validator.isAlphanumeric(req.params.id)) return res.status(400).end("bad id");
     next();
-}
+};
 
 var checkUserInfo = function(req,res,next){
     if(!validator.isAlphanumeric(req.body.firstName)) return res.status(400).end("bad input for first name");
     if(!validator.isAlphanumeric(req.body.lastName)) return res.status(400).end("bad input for last name");
     if(!validator.isEmail(req.body.email)) return res.status(400).end("bad email input");
     next();
-}
+};
 
 app.use(function(req,res,next){
     var cookies = cookie.parse(req.headers.cookie || '');
     req.username = (req.session.username)? req.session.username:cookies.username;
     req.facebookID = (req.session.facebookID)? req.session.facebookID:cookies.facebookID;
     next();
-})
+});
 
 // Serve frontend
 app.use(express.static('frontend'));
@@ -191,7 +191,7 @@ app.get('/file/:filename', function(req, res, next){
         var readstream = gfs.createReadStream({
             filename: files[0].filename
         });
-        res.set('Content-Type', files[0].contentType)
+        res.set('Content-Type', files[0].contentType);
         return readstream.pipe(res);
     });
 });
@@ -205,15 +205,15 @@ app.get('/file/', function(req, res, next){
             });
         }
         return res.json(files);
-     })
-})
+     });
+});
 
 app.delete('/file/:filename', function(req, res, next){
     gfs.exist({filename: req.params.filename}, function(err, found){
         if (err) return res.status(400).end('file not found');
         gfs.remove({ filename: req.params.filename });
     });
-})
+});
 
 // ################################# USERS ##################################
 
@@ -247,7 +247,7 @@ app.get('/users/info/', function(req, res, next){
             if (!user) return res.status(404).end("Facebook User #" + req.session.facebookID + " does not exists");
             return res.json(user);
         });
-})
+});
 
 // Update user info of current user logged in
 app.put('/users/info/',checkUserInfo, function(req, res, next){
@@ -255,7 +255,7 @@ app.put('/users/info/',checkUserInfo, function(req, res, next){
     if(user.password) {
         var salt = crypto.randomBytes(16).toString('base64');
         var saltedHash = generateHash(user.password, salt);
-        delete user['password'];
+        delete user.password;
         user.salt = salt;
         user.saltedHash = saltedHash;
     }
@@ -264,7 +264,7 @@ app.put('/users/info/',checkUserInfo, function(req, res, next){
             if (err) return res.status(500).end(JSON.stringify(err));
             if (!facebookFound) return res.status(404).end("Facebook User #" + req.session.facebookID + " does not exists");
             //Do not want to update id so delete
-            delete user['_id'];
+            delete user._id;
             db.collection('users').update({facebookID: user.facebookID}, {$set: user} , function(err, result){
                 if (err) return res.status(500).end(JSON.stringify(err));
                 return res.json("User has been updated");
@@ -281,7 +281,7 @@ app.put('/users/info/',checkUserInfo, function(req, res, next){
             });
         });
     }
-})
+});
 
 // Check whether password is equal to user password
 app.post('/users/passCheck/', function(req, res, next){
@@ -297,7 +297,7 @@ app.post('/users/passCheck/', function(req, res, next){
         else
             return res.json(false);
     });
-})
+});
 
 app.post('/signup/',checkUsername, function(req, res, next) {
     var username = req.body.username;
@@ -498,7 +498,7 @@ app.post('/comment/',sanitizeContent,isAuthenticated,function(req,res,next){
 //get comments for given beat id
 //modify later to return based on timestamp
 app.get('/comment/:id/',checkId,isAuthenticated,function(req,res,next){
-    var comments = []
+    var comments = [];
     db.collection('comments').find({beatId:req.params.id}).toArray(function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("no comments for this beat found");
@@ -529,7 +529,7 @@ app.delete('/comment/:id/',checkId,isAuthenticated,function(req,res,next){
 app.get('/', (req, res) => {
   var cursor = db.collection('users').find();
   console.log(cursor);
-})
+});
 
 // --------------------------------------------------------
 

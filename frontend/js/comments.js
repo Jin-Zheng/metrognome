@@ -11,9 +11,9 @@ app.controller("CommentController", function($scope, $location) {
                 $scope.$apply(function(){
                     $scope.comments = data;
                     $scope.filteredComments = [];
-                    $scope.currentPage = 1
-                    $scope.numPerPage = 10
-                    $scope.firstPage = true
+                    $scope.currentPage = 1;
+                    $scope.numPerPage = 10;
+                    $scope.firstPage = true;
                     $scope.lastPage = false;
                                 
                 
@@ -27,7 +27,7 @@ app.controller("CommentController", function($scope, $location) {
                             }
                         }
                         return  user == username ? true : false;
-                    }
+                    };
                 
                     //take in what user writes for comments
                     $scope.submit = function(){
@@ -46,7 +46,7 @@ app.controller("CommentController", function($scope, $location) {
                                 }
                             });
                             $scope.commentSubmit='';
-                        };
+                        }
                     };
 
                     //disable buttons for navigation
@@ -54,7 +54,7 @@ app.controller("CommentController", function($scope, $location) {
                         var numOfPages =  Math.ceil($scope.comments.length / $scope.numPerPage);
                         $scope.firstPage = $scope.currentPage == 1;
                         $scope.lastPage = $scope.currentPage == numOfPages;
-                    }
+                    };
                     //nav button back
                     $scope.goBack = function() {
                         $scope.currentPage = $scope.currentPage - 1;
@@ -64,7 +64,7 @@ app.controller("CommentController", function($scope, $location) {
                     $scope.goForward = function() {
                         $scope.currentPage = $scope.currentPage + 1;
                         
-                    }
+                    };
                     //using this to delete comments
                     $scope.deleteComment = function(id){
                         api.deleteComment(id, function(err,data){

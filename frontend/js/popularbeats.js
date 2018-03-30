@@ -96,7 +96,7 @@
 					currChange = elmt.id.split('change')[0];
 					
 				});
-			})
+			});
 			document.querySelectorAll('.sequencer_step-xl').forEach(function(elmt){
 				elmt.onmouseenter = function(e){
 					if(e.buttons ==1){
@@ -109,13 +109,13 @@
 							this.classList.remove('play');
 						}
 					}
-				}
+				};
 				elmt.addEventListener('click', function () {
 					sequencerState[elmt.parentNode.id][1][elmt.id] = !sequencerState[elmt.parentNode.id][1][elmt.id];
 					this.classList.toggle('play');
 				});
 			});
-		}
+		};
 		
 		// Reset the sequencer
 		this.reset = function(){
@@ -123,7 +123,7 @@
 				sequencerState[elmt.parentNode.id][1][elmt.id.split('step')[1]] = false;
 				elmt.classList.remove('play');
 			});
-		}
+		};
 
 		this.setVolume = function(volume){
 			var btn = document.querySelector('#volume_button');
@@ -140,7 +140,7 @@
 			for (var i in audioFiles){
 				audioFiles[i][0].volume = parseInt(volume) / 100;
 			}
-		}
+		};
 
 		// Step through the sequencer
 		this.step = function(){
@@ -154,8 +154,8 @@
 				if (play) {
 					play.parentNode.click();
 				}
-			};
-		}
+			}
+		};
 
 			// Draw the control panel element
 		this.drawController = function(){
@@ -170,7 +170,7 @@
 					<div>
 						<input id="volume" class="slider" type="range" min="0" max="100" value="100">
 					</div>
-					<div class="col-5"></div>`
+					<div class="col-5"></div>`;
 				if ((api.getCookie("facebookID") !== null && api.getCookie("facebookID") !== '' || (api.getCookie("username") !== null && api.getCookie("username") !== ''))){
 					draw +=`
 						<button type="button" id="save" class="btn btn-custom controller btn-save p-1" data-toggle="collapse" data-target="#save_form"></button>
@@ -185,7 +185,7 @@
 								</div>
 							</form>
 						</div>
-				`
+				`;
 				}
 			draw += `<div id="reset" class="btn btn-custom p-1">Clear</div></div>`;
 			controller.innerHTML = draw;
@@ -242,23 +242,23 @@
 					var desc = document.querySelector('#beat_description').value;
 					api.saveBeat(sequencerState, tempo, title, desc, function(err, beat){
 						if (err) return alert(err);
-						alert('saved!')
+						alert('saved!');
 					});
 				});
 			}
-		}
+		};
 			
 		this.playBeat = function(beatInfo){
 			//self.drawSequencer();
 			document.querySelector('#reset').click();
 			//reset the audioFiles with saved sound
 			audioFiles = {
-				s0: [new Audio(beatInfo.beatSequence['s0'][0][2]),beatInfo.beatSequence['s0'][0][1],beatInfo.beatSequence['s0'][0][2]],
-				s1: [new Audio(beatInfo.beatSequence['s1'][0][2]),beatInfo.beatSequence['s1'][0][1],beatInfo.beatSequence['s0'][0][2]],
-				s2: [new Audio(beatInfo.beatSequence['s2'][0][2]),beatInfo.beatSequence['s2'][0][1],beatInfo.beatSequence['s0'][0][2]],
-				s3: [new Audio(beatInfo.beatSequence['s3'][0][2]),beatInfo.beatSequence['s3'][0][1],beatInfo.beatSequence['s0'][0][2]],
-				s4: [new Audio(beatInfo.beatSequence['s4'][0][2]),beatInfo.beatSequence['s4'][0][1],beatInfo.beatSequence['s0'][0][2]],
-				s5: [new Audio(beatInfo.beatSequence['s5'][0][2]),beatInfo.beatSequence['s5'][0][1],beatInfo.beatSequence['s0'][0][2]]
+				s0: [new Audio(beatInfo.beatSequence.s0[0][2]),beatInfo.beatSequence.s0[0][1],beatInfo.beatSequence.s0[0][2]],
+				s1: [new Audio(beatInfo.beatSequence.s1[0][2]),beatInfo.beatSequence.s1[0][1],beatInfo.beatSequence.s0[0][2]],
+				s2: [new Audio(beatInfo.beatSequence.s2[0][2]),beatInfo.beatSequence.s2[0][1],beatInfo.beatSequence.s0[0][2]],
+				s3: [new Audio(beatInfo.beatSequence.s3[0][2]),beatInfo.beatSequence.s3[0][1],beatInfo.beatSequence.s0[0][2]],
+				s4: [new Audio(beatInfo.beatSequence.s4[0][2]),beatInfo.beatSequence.s4[0][1],beatInfo.beatSequence.s0[0][2]],
+				s5: [new Audio(beatInfo.beatSequence.s5[0][2]),beatInfo.beatSequence.s5[0][1],beatInfo.beatSequence.s0[0][2]]
 			};
 			self.drawController();
 			self.drawSequencer();

@@ -48,7 +48,7 @@
                 else {
                     sequencerState = storageState;
                 }
-            }
+            };
 
             //Load the content of modal #choose_file
             this.loadFilePicker = function(){
@@ -56,21 +56,21 @@
                     if (err) return alert(err);
                     var draw = `<ul id="filesList" class="list-group">`;
                     for (var i in files){
-                        draw += `<li id=${files[i].filename} class="list-group-item list-group-item-action" data-dismiss="modal">${files[i].metadata.title}</li>`
+                        draw += `<li id=${files[i].filename} class="list-group-item list-group-item-action" data-dismiss="modal">${files[i].metadata.title}</li>`;
                     }
                     draw += `</ul>`;
                     document.querySelector('#displayFiles').innerHTML = draw;
 
                     document.querySelector('#filesList').addEventListener('click', function(e){
                         var target = getEventTarget(e);
-                        audioFiles[currChange] = [new Audio('file/' + target.id), target.innerHTML, 'file/' + target.id]
+                        audioFiles[currChange] = [new Audio('file/' + target.id), target.innerHTML, 'file/' + target.id];
                         sequencerState[currChange][0] = audioFiles[currChange];
                         localStorage.setItem("seqState", JSON.stringify(sequencerState));
                         self.stateInit();
                         self.drawSequencer(sequencerState);
                     });
                 });
-            }
+            };
 
             //Load the content of modal #delete_file
             this.loadDeleteFilePicker = function(){
@@ -78,23 +78,23 @@
                     if (err) return alert(err);
                     var draw = `<ul id="deleteFilesList" class="list-group">`;
                     for (var i in files){
-                        draw += `<li id=${files[i].filename} class="list-group-item list-group-item-action" data-dismiss="modal">${files[i].metadata.title}</li>`
+                        draw += `<li id=${files[i].filename} class="list-group-item list-group-item-action" data-dismiss="modal">${files[i].metadata.title}</li>`;
                     }
                     draw += `</ul>`;
                     document.querySelector('#displayUserFiles').innerHTML = draw;
 
                     document.querySelector('#deleteFilesList').addEventListener('click', function(e){
                         var target = getEventTarget(e);
-                        console.log(target) // Shit, cant work on this rn, need to account for if a beat is using one of the deleted sound files
+                        console.log(target); // Shit, cant work on this rn, need to account for if a beat is using one of the deleted sound files
                     });
                 });
-            }
+            };
 
             // Draw the main sequencer element
             this.drawSequencer = function(ss){
                 // Set this sequencer's audioFiles
-                for (var i in audioFiles){
-                    audioFiles[i] = [new Audio(ss[i][0][2]), ss[i][0][1], ss[i][0][2]]
+                for (var a in audioFiles){
+                    audioFiles[a] = [new Audio(ss[a][0][2]), ss[a][0][1], ss[a][0][2]];
                 }
 
                 var sequencer = document.querySelector('#sequencer');
@@ -116,10 +116,10 @@
                 }
 
                 // load existing sequencerState
-                for (var i in ss){
-                    for (var j in ss[i][1]){
-                        if (ss[i][1][j]){
-                            document.querySelector('#' + i + ' #' + j).classList.toggle('play')
+                for (var m in ss){
+                    for (var n in ss[m][1]){
+                        if (ss[m][1][n]){
+                            document.querySelector('#' + m + ' #' + n).classList.toggle('play');
                         }
                     }
                 }
@@ -155,7 +155,7 @@
                         currChange = elmt.id.split('change')[0];
                         self.loadFilePicker();
                     });
-                })
+                });
                 document.querySelectorAll('.sequencer_step-xl').forEach(function(elmt){
                     elmt.onmouseenter = function(e){
                         if(e.buttons ==1){
@@ -168,14 +168,14 @@
                                 this.classList.remove('play');
                             }
                         }
-                    }
+                    };
                     elmt.addEventListener('click', function () {
                         sequencerState[elmt.parentNode.id][1][elmt.id] = !ss[elmt.parentNode.id][1][elmt.id];
                         this.classList.toggle('play');
                         localStorage.setItem('seqState', JSON.stringify(sequencerState));
                     });
                 });
-            }
+            };
 
             // Reset the sequencer
             this.reset = function(){
@@ -196,7 +196,7 @@
                     elmt.classList.remove('play');
                     localStorage.setItem('seqState', JSON.stringify(sequencerState));
                 });
-            }
+            };
 
             this.setVolume = function(volume){
                 var btn = document.querySelector('#volume_button');
@@ -213,7 +213,7 @@
                 for (var i in audioFiles){
                     audioFiles[i][0].volume = parseInt(volume) / 100;
                 }
-            }
+            };
 
             // Step through the sequencer
             this.step = function(){
@@ -240,11 +240,11 @@
                     if (play) {
                         play.parentNode.click();
                     }
-                };
+                }
 
                 if (beat < steps - 1) beat++;
                 else beat = 0;
-            }
+            };
 
             // Draw the control panel element
             this.drawController = function(){
@@ -278,13 +278,13 @@
                         clearInterval(looping);
                         looping = false;
                     }
-                })
+                });
                 document.querySelector('#clear').addEventListener('click', function () {
                     clearInterval(looping);
                     looping = false;
                     self.reset();
                     beat = 0;
-                })
+                });
                 document.querySelector('#previous').addEventListener('click', function () {
                     beat = 0;
 
@@ -294,7 +294,7 @@
                             document.querySelector('#' + j + ' #step' + i).classList.remove('playing');
                         }
                     }
-                })
+                });
                 document.querySelector('#tempo').addEventListener('input', function(){
                     document.querySelector('#tempo_val').innerHTML = this.value;
                     tempo = this.value;
@@ -314,7 +314,7 @@
                     volume = this.value;
                     self.setVolume(volume);
                 });
-            }
+            };
 
             // User options
             this.drawUserDeck = function(){
@@ -324,7 +324,7 @@
                     <button class="btn btn-custom dropdown-toggle" type="button" data-toggle="dropdown">Load your beats
                     <span class="caret"></span></button>
                 <ul id="loadBeats" class="dropdown-menu"></ul>
-                </div>`
+                </div>`;
                 //draw +=`<button type="button" id="deleteSound" class="btn btn-custom mr-2" data-toggle="modal" data-target="#delete_file">delete</button>`
                 draw +=`
                     <button type="button" id="upload" class="btn btn-custom controller btn-upload mr-2 offset-8" data-toggle="modal" data-target="#upload_modal"></button>
@@ -342,7 +342,7 @@
                             </div>
                         </form>
                     </div>
-                `
+                `;
                     //<button type="button" id="download" class="btn btn-custom mr-2">Download</button>
                 draw += '</div>';
                 userDeck.innerHTML = draw;
@@ -352,7 +352,7 @@
                     if (err) return alert(err);
                     var loadBeats ='';
                     for (var i in beats){
-                        loadBeats += `<li id=${beats[i][0]} class="list-group-item list-group-item-action">${beats[i][1]}</li>`
+                        loadBeats += `<li id=${beats[i][0]} class="list-group-item list-group-item-action">${beats[i][1]}</li>`;
                     }
                     document.querySelector('#loadBeats').innerHTML = loadBeats;
 
@@ -363,7 +363,7 @@
                             self.tempo = beat.tempo;
                             self.drawSequencer(sequencerState);
                             self.drawController();
-                        })
+                        });
                     });
                 });
 
@@ -384,7 +384,7 @@
                     var desc = document.querySelector('#beat_description').value;
                     api.saveBeat(sequencerState, tempo, title, desc, function(err, beat){
                         if (err) return alert(err);
-                        alert('saved!')
+                        alert('saved!');
                     });
                 });
                 document.querySelector('#postBeat').addEventListener('click',function(e){
@@ -432,8 +432,8 @@
                 /*document.querySelector('#deleteSound').addEventListener('click', function(){
                     self.loadDeleteFilePicker();
                 })*/
-            }
-        }
+            };
+        };
 
         //----------INIT----------
         var initSequencer = new Sequencer();

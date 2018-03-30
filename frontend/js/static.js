@@ -14,5 +14,5 @@
             document.querySelector('#popularbeatsLink').classList.add("d-none");
 
         }
-    })
+    });
 })();
