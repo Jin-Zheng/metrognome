@@ -41,8 +41,16 @@
     height: auto;
 }
 
+.sequencer_step-xl:hover{
+    opacity: 0.9;
+}
+
 .play{
     background-color: #11171e;
+}
+
+.playing{
+    opacity : 0.9;
 }
 
 .btn-custom {

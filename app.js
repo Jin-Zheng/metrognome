@@ -22,30 +22,6 @@ const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const config = require('./configuration/config');
 
-/* testing for merging and concatenating audio files
-const ffmpeg = require('fluent-ffmpeg');
-var audioPath = path.join(__dirname, '/upload/')
-var audioconcat = require('audioconcat')
-
-var songs = [
-  audioPath + 'kick1.mp3',
-  audioPath + 'snare.mp3'
-]
-
-audioconcat(songs)
-  .concat('all.mp3')
-  .on('start', function (command) {
-    console.log('ffmpeg process started:', command)
-  })
-  .on('error', function (err, stdout, stderr) {
-    console.error('Error:', err)
-    console.error('ffmpeg stderr:', stderr)
-  })
-  .on('end', function (output) {
-    console.error('Audio created in:', output)
-  })*/
-
-
 const app = express();
 app.use(favicon(path.join(__dirname, '/frontend/media/', 'favicon.ico')));
 
@@ -197,7 +173,7 @@ app.get('/file/:filename', function(req, res, next){
 });
 
 app.get('/file/', function(req, res, next){
-     gfs.files.find({}).toArray(function(err, files){
+     gfs.files.find({$or: [{'metadata.username': req.username}, {'metadata.username': null}]}).toArray(function(err, files){
         if(!files || files.length === 0){
             return res.status(404).json({
                 responseCode: 1,
@@ -386,26 +362,15 @@ app.post('/beat/',isAuthenticated,function(req,res,next){
     });
 });
 
-//get beat by id
-app.get('/beat/:id',checkId,isAuthenticated,function(req,res,next){
-    db.collection('beats').findOne({_id:req.params.id},function(err,beat){
-        if(err) return res.status(500).end(err);
-        if(beat === null) return res.status(404).end("No beat with that id exists");
-        else{
-            return res.json(beat);
-        }
-    });
-});
-
 //get beat id by owner
 app.get('/beat/private/',isAuthenticated,function(req,res,next){
     var usersBeats = [];
-    db.collection('beats').find({username:req.session.username,publicBool:false}).exec(function(err,result){
+    db.collection('beats').find({username:req.username, publicBool:false}).toArray(function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("No private beats found for user");
         else{
             for(var i =0;i<result.length;i++){
-                usersBeats.push(result[i]._id);
+                usersBeats.push([result[i]._id, result[i].title]);
             }
             return res.json(usersBeats);
         }
@@ -427,9 +392,23 @@ app.get('/beat/public/',isAuthenticated,function(req,res,next){
     });
 });
 
+//get beat by id
+app.get('/beat/:id',isAuthenticated,function(req,res,next){
+    var ObjectId = require('mongodb').ObjectId;
+    var id = req.params.id;
+    var o_id = new ObjectId(id);
+    db.collection('beats').findOne({_id:o_id},function(err,beat){
+        if(err) return res.status(500).end(err);
+        if(beat === null) return res.status(404).end("Beat with that id: "+req.params.id+" doesn't exist");
+        else{
+            return res.json(beat);
+        }
+    });
+});
+
 //delete beat by id
 app.delete('/beat/:id/',checkId,isAuthenticated,function(req,res,next){
-    db.collection('beats').findOne({_id:req.params.id},function(err,result){
+    db.collection('beats').findOne({_id: req.params.id},function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("Beat id not found");
         else{

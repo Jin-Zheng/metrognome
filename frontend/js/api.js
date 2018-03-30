@@ -109,7 +109,7 @@ var api = (function(){
 
 // ################################# PROFILE ##################################
     //use for profile page
-    module.getPrivateBeatsId = function(callback){
+    module.getPrivateBeats = function(callback){
         send("GET","/beat/private/",null,callback);
     }
 

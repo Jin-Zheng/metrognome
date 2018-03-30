@@ -22,7 +22,6 @@
     <link href="css/metro-gnome.css" rel="stylesheet" type="text/css"/>
 
     <link rel="shortcut icon" href="#">
-
   </head>
 
   <body class="color-4">
@@ -104,7 +103,8 @@
       <div class="container mt-5">
         <div class="row align-content-center">
           <div class="col-12 p-5">
-              <div id="sequencer" class="container"></div>
+              <div id="userdeck" class="container"></div>
+              <div id="sequencer" class="container mt-2 p-2 border-top"></div>
               <div id="controller" class="container mt-2 p-2 border-top"></div>
           </div>
         </div>
@@ -155,6 +155,23 @@
       </div>
     </div>
 
+    <!-- Delete File Modal -->
+    <div class="modal fade" id="delete_file" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Choose a sound file to delete</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div id="displayUserFiles"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer py-5 bg-black fixed-bottom">
       <div class="container">
@@ -167,6 +184,7 @@
     <!-- Bootstrap core JavaScript -->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="js/crunker.js"></script>
     <script src="js/api.js"></script>
     <script src="js/script.js"></script>
     <script src="js/login.js"></script>
