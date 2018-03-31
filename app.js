@@ -65,7 +65,7 @@ passport.use(new FacebookStrategy({
                 var newUser = {
                     firstName: profile.name.givenName,
                     lastName: profile.name.familyName,
-                    email: profile.emails[0].value,
+                    email: (profile.emails) ? profile.emails[0].value : '',
                     facebookID: profile.id,
                     token:accessToken,
                     saltedHash: '',
