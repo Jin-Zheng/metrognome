@@ -154,9 +154,9 @@ var checkId = function(req,res,next){
 };
 
 var checkUserInfo = function(req,res,next){
-    if(!validator.isAlphanumeric(req.body.firstName)) return res.status(400).end("bad input for first name");
-    if(!validator.isAlphanumeric(req.body.lastName)) return res.status(400).end("bad input for last name");
-    if(!validator.isEmail(req.body.email)) return res.status(400).end("bad email input");
+    if(!validator.isAlphanumeric(req.body.firstName) && req.body.firstName !== '') return res.status(400).end("bad input for first name");
+    if(!validator.isAlphanumeric(req.body.lastName) && req.body.lastName !== '') return res.status(400).end("bad input for last name");
+    if(!validator.isEmail(req.body.email) && req.body.email !== '') return res.status(400).end("bad email input");
     next();
 };
 
@@ -236,13 +236,13 @@ app.get('/auth/facebook/callback',
 
 // Get user information
 app.get('/users/info/', function(req, res, next){
-    if (req.session.username) {
+    if (req.username) {
         db.collection('users').findOne({_id: req.session.username}, function(err, user){
             if (err) return res.status(500).end(JSON.stringify(err));
             if (!user) return res.status(404).end("User #" + req.session.username + " does not exists");
             return res.json(user);
         });
-    } else if(req.session.facebookID)
+    } else if(req.facebookID)
         db.collection('users').findOne({facebookID: req.session.facebookID}, function(err, user){
             if (err) return res.status(500).end(JSON.stringify(err));
             if (!user) return res.status(404).end("Facebook User #" + req.session.facebookID + " does not exists");
@@ -260,7 +260,7 @@ app.put('/users/info/',checkUserInfo, function(req, res, next){
         user.salt = salt;
         user.saltedHash = saltedHash;
     }
-    if(req.session.facebookID) {
+    if(req.facebookID) {
         db.collection('users').findOne({facebookID: req.session.facebookID}, function(err, facebookFound){
             if (err) return res.status(500).end(JSON.stringify(err));
             if (!facebookFound) return res.status(404).end("Facebook User #" + req.session.facebookID + " does not exists");
@@ -272,7 +272,7 @@ app.put('/users/info/',checkUserInfo, function(req, res, next){
             });
         });
     }
-    else if (req.session.username) {
+    else if (req.username) {
         db.collection('users').findOne({_id: req.session.username}, function(err, found){
             if (err) return res.status(500).end(JSON.stringify(err));
             if (!found) return res.status(404).end("User #" + req.session.username + " does not exists");
