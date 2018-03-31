@@ -223,9 +223,17 @@ app.get('/auth/facebook/callback',
     passport.authenticate('facebook', { failureRedirect: '/profile.html' }),
     function(req, res) {
         console.log(req.user);
-        db.collection('users').findOne({facebookID: req.session.id}, function(err, user){
-            console.log(user);
+        db.collection('users').findOne({facebookID: req.user.id}, function(err, user){
+            if (err) return res.status(400).end(err);
+            res.setHeader('Set-Cookie', cookie.serialize('username', user._id, {
+                path : '/',
+                secure: true,
+                sameSite: 'lax',
+                maxAge: 60 * 60 * 24 * 7
+            }));
+            req.session.user = user._id;
         });
+        /**
         req.session.facebookID = req.user.id;
         // initialize cookie
         res.setHeader('Set-Cookie', cookie.serialize('facebookID', req.user.id, {
@@ -234,6 +242,7 @@ app.get('/auth/facebook/callback',
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7
         }));
+        */
         res.redirect('/');
 });
 
