@@ -128,7 +128,7 @@ app.use(session({
 }));
 
 var isAuthenticated = function(req, res, next) {
-    if (!req.username || !req.facebookID) return res.status(401).end("access denied");
+    if (!req.username && !req.facebookID) return res.status(401).end("access denied");
     next();
 };
 
