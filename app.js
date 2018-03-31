@@ -222,6 +222,7 @@ app.get('/auth/facebook', passport.authenticate('facebook', { authType: 'rereque
 app.get('/auth/facebook/callback',
     passport.authenticate('facebook', { failureRedirect: '/profile.html' }),
     function(req, res) {
+        console.log(req.user);
         req.session.facebookID = req.user.id;
         // initialize cookie
         res.setHeader('Set-Cookie', cookie.serialize('facebookID', req.user.id, {
