@@ -223,6 +223,9 @@ app.get('/auth/facebook/callback',
     passport.authenticate('facebook', { failureRedirect: '/profile.html' }),
     function(req, res) {
         console.log(req.user);
+        db.collection('users').findOne({facebookID: req.session.id}, function(err, user){
+            console.log(user);
+        });
         req.session.facebookID = req.user.id;
         // initialize cookie
         res.setHeader('Set-Cookie', cookie.serialize('facebookID', req.user.id, {
