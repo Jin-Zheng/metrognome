@@ -95,7 +95,7 @@
           <div id="messages" ng-repeat="comment in filteredComments">
             <div class="message">
               <div class="message_user">
-                <div class="message_username">{{comment.username}}</div>
+                <div class="message_username">{{(comment.username)? comment.username:comment.facebookID}}</div>
               </div>
               <div class="message_content">{{comment.content}}</div>
               <div ng-cloak ng-show="deleteAccess(comment.username)" id="{{comment._id}}" class="delete-icon icon" ng-click="deleteComment(comment._id)"></div>

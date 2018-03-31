@@ -106,7 +106,7 @@
       <div class="col-xs-2 icon back" ng-click="goBack()" ></div>
       <div class="col-xs-2" ng-repeat="beat in beats" >
         <div class="col-xs-12 tile">
-          <div class="tile-info" >Author: {{beat.username}}</div>
+          <div class="tile-info" >Author: {{(beat.username)? beat.username:beat.facebookID}}</div>
           <div class="play-cont">
             <span class="helper"></span>
             <div id="play-{{beat._id}}" class="play-button" ng-click="playBeat(beat._id)"></div>

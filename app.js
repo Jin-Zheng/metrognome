@@ -385,7 +385,7 @@ app.post('/beat/',isAuthenticated,function(req,res,next){
     var publicBool = req.body.publicBool;
     var title = req.body.title;
     var desc = req.body.desc;
-    var newBeat = {username:req.username, title:title, desc:desc, beatSequence:beatSequence, tempo:tempo, publicBool:publicBool, upvotes:0, dateCreated: new Date()};
+    var newBeat = {username:req.username,facebookID:req.facebookID, title:title, desc:desc, beatSequence:beatSequence, tempo:tempo, publicBool:publicBool, upvotes:0, dateCreated: new Date()};
 
     //maybe later on add a check to not allow duplicate beats?
     db.collection('beats').insert(newBeat, function(err,result){
@@ -399,7 +399,7 @@ app.post('/beat/',isAuthenticated,function(req,res,next){
 //get beat id by owner
 app.get('/beat/private/',isAuthenticated,function(req,res,next){
     var usersBeats = [];
-    db.collection('beats').find({username:req.username, publicBool:false}).toArray(function(err,result){
+    db.collection('beats').find({username:req.username,facebookID:req.facebookID, publicBool:false}).toArray(function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("No private beats found for user");
         else{
@@ -414,7 +414,7 @@ app.get('/beat/private/',isAuthenticated,function(req,res,next){
 //get all public beat
 app.get('/beat/public/popular',isAuthenticated,function(req,res,next){
     var allBeats = [];
-    db.collection('beats').find({publicBool:true},{username:1}).sort({upvotes:-1}).limit(24).toArray(function(err,result){
+    db.collection('beats').find({publicBool:true},{username:1,facebookID:1}).sort({upvotes:-1}).limit(24).toArray(function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("No public beats found");
         else{
@@ -472,10 +472,10 @@ app.patch('/beat/upvote/:id/',isAuthenticated,function(req,res,next){
 //post a comment
 //might need to add a createdAt field
 app.post('/comment/',sanitizeContent,isAuthenticated,function(req,res,next){
-    var username = req.session.username;
+    var username = req.username;
     var beatId = req.body.beatId;
     var content = req.body.content;
-    var comment = {username:username,beatId:beatId,content:content};
+    var comment = {username:username,facebookID:req.facebookID,beatId:beatId,content:content};
     db.collection('comments').insert(comment,function(err,result){
         if(err) return res.status(500).end(err);
         else{
