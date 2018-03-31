@@ -62,7 +62,7 @@ passport.use(new FacebookStrategy({
             if (err) return res.status(500).end(err);
             // If user does not exist
             console.log(11111111111111111);
-            console.log(user);
+            console.log(profile);
             if (!user){
                 var email;
                 if (profile.emails)
