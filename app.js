@@ -232,7 +232,7 @@ app.get('/auth/facebook/callback',
                 maxAge: 60 * 60 * 24 * 7
             }));
             req.session.user = user._id;
-            res.redirect('/');z
+            res.redirect('/');
         });
         /**
         req.session.facebookID = req.user.id;
