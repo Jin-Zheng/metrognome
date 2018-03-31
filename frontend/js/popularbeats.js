@@ -66,7 +66,7 @@
 			}
 
 			// Add event listeners
-			// Can't loop this because of closure? or something like that
+			// Can't loop this because of closure
 			document.querySelector('#s0').addEventListener('click', function(){
 				audioFiles.s0[0].currentTime = 0;
 				audioFiles.s0[0].play();
@@ -145,16 +145,33 @@
 		// Step through the sequencer
 		this.step = function(){
 			if (!looping) return;
-			if (beat < steps - 1) beat++;
-			else beat = 0;
-
+			
 			// Loop through rows and play if column contains class play
+
 			for (var j in audioFiles){
+				// visualizer
+				var playing = document.querySelector('#' + j + ' #step' + beat);
+				var prev;
+				if (beat > 0) {
+					prev = document.querySelector('#' + j + ' #step' + (beat - 1));
+					if (prev){
+						prev.classList.toggle('playing');
+					}
+				}
+				if (beat <= steps - 1) {
+					document.querySelector('#' + j + ' #step' + (steps - 1)).classList.remove('playing');
+				}
+				playing.classList.toggle('playing');
+
+
 				var play = document.querySelector('#' + j + ' #step' + beat + '.play');
 				if (play) {
 					play.parentNode.click();
 				}
 			}
+
+			if (beat < steps - 1) beat++;
+			else beat = 0;
 		};
 
 			// Draw the control panel element
