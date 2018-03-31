@@ -61,12 +61,7 @@ passport.use(new FacebookStrategy({
         db.collection('users').findOne({facebookID: profile.id}, function(err, user){
             if (err) return res.status(500).end(err);
             // If user does not exist
-            console.log(11111111111111111);
-            console.log(profile);
             if (!user){
-                var email;
-                if (profile.emails)
-                    email = profile.emails[0].value;
                 var newUser = {
                     firstName: profile.name.givenName,
                     lastName: profile.name.familyName,
