@@ -223,18 +223,6 @@ app.get('/auth/facebook/callback',
     passport.authenticate('facebook', { failureRedirect: '/profile.html' }),
     function(req, res) {
         console.log(req.user);
-        db.collection('users').findOne({facebookID: req.user.id}, function(err, user){
-            if (err) return res.status(400).end(err);
-            res.setHeader('Set-Cookie', cookie.serialize('username', user._id, {
-                path : '/',
-                secure: true,
-                sameSite: 'lax',
-                maxAge: 60 * 60 * 24 * 7
-            }));
-            req.session.username = user._id;
-            res.redirect('/');
-        });
-        /**
         req.session.facebookID = req.user.id;
         // initialize cookie
         res.setHeader('Set-Cookie', cookie.serialize('facebookID', req.user.id, {
@@ -243,21 +231,19 @@ app.get('/auth/facebook/callback',
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7
         }));
-        */
+        res.redirect('/');
 });
 
 // Get user information
 app.get('/users/info/', function(req, res, next){
-console.log(req.username);
-
     if (req.username) {
-        db.collection('users').findOne({_id: req.username}, function(err, user){
+        db.collection('users').findOne({_id: req.session.username}, function(err, user){
             if (err) return res.status(500).end(JSON.stringify(err));
-            if (!user) return res.status(404).end("User #" + req.username + " does not exists");
+            if (!user) return res.status(404).end("User #" + req.session.username + " does not exists");
             return res.json(user);
         });
     } else if(req.facebookID)
-        db.collection('users').findOne({facebookID: req.facebookID}, function(err, user){
+        db.collection('users').findOne({facebookID: req.session.facebookID}, function(err, user){
             if (err) return res.status(500).end(JSON.stringify(err));
             if (!user) return res.status(404).end("Facebook User #" + req.session.facebookID + " does not exists");
             return res.json(user);
@@ -433,10 +419,10 @@ app.get('/beat/public/popular',isAuthenticated,function(req,res,next){
         if(result === null) return res.status(404).end("No public beats found");
         else{
             return res.json(result);
-            
+
         }
     });
-}); 
+});
 
 //get beat by id
 app.get('/beat/:id/',isAuthenticated,function(req,res,next){
@@ -478,7 +464,7 @@ app.patch('/beat/upvote/:id/',isAuthenticated,function(req,res,next){
     var ObjectId = require('mongodb').ObjectId;
     var id = req.params.id;
     var o_id = new ObjectId(id);
-    db.collection('beats').update({_id:o_id},{$inc: {upvotes:1}}); 
+    db.collection('beats').update({_id:o_id},{$inc: {upvotes:1}});
 });
 
 // ################################# COMMENTS ##################################
@@ -551,4 +537,3 @@ http.createServer(app).listen(PORT, function (err) {
     if (err) console.log(err);
     else console.log("HTTP server on http://localhost:%s", PORT);
 });
-
