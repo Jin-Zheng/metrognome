@@ -18,16 +18,19 @@ app.controller("CommentController", function($scope, $location) {
                     $scope.lastPage = false;
                                 
                 
-                    $scope.deleteAccess = function(username) {
+                    $scope.deleteAccess = function(username,facebookID) {
                         var user = "";
                         if ((api.getCookie("facebookID") !== null && api.getCookie("facebookID") !== '')){
                             user = api.getCookie("facebookID");
+                            return  user == facebookID ? true : false;
+
                         }else{
                             if((api.getCookie("username") !== null && api.getCookie("username") !== '')){
                                 user = api.getCookie("username");
+                                return  user == username ? true : false;
                             }
                         }
-                        return  user == username ? true : false;
+                        
                     };
                 
                     //take in what user writes for comments
