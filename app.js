@@ -237,15 +237,15 @@ app.get('/auth/facebook/callback',
 // Get user information
 app.get('/users/info/', function(req, res, next){
     if (req.username) {
-        db.collection('users').findOne({_id: req.session.username}, function(err, user){
+        db.collection('users').findOne({_id: req.username}, function(err, user){
             if (err) return res.status(500).end(JSON.stringify(err));
-            if (!user) return res.status(404).end("User #" + req.session.username + " does not exists");
+            if (!user) return res.status(404).end("User #" + req.username + " does not exists");
             return res.json(user);
         });
     } else if(req.facebookID)
-        db.collection('users').findOne({facebookID: req.session.facebookID}, function(err, user){
+        db.collection('users').findOne({facebookID: req.facebookID}, function(err, user){
             if (err) return res.status(500).end(JSON.stringify(err));
-            if (!user) return res.status(404).end("Facebook User #" + req.session.facebookID + " does not exists");
+            if (!user) return res.status(404).end("Facebook User #" + req.facebookID + " does not exists");
             return res.json(user);
         });
 });
