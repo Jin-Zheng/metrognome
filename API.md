@@ -55,44 +55,98 @@ curl http://localhost:3000/
 
 ## User API
 
-- Description: Facebook authentication
+- Description: Facebook authentication strategy
 - Request: `GET /auth/facebook/`
 - Response: 200
 - Example:
 ```
-curl 
+curl https://metro-gnome.me/auth/facebook/
 ```
 
-- Description: Facebook authentication callback
+- Description: Facebook authentication callback. send cookie with facebookID
 - Request: `GET /auth/facebook/callback`
 - Response: 200
+    - body: string
+        - facebookID: (string) facebookID for user
 - Example:
 ```
-curl 
+curl https://metro-gnome.me/auth/facebook/callback
 ```
 
-- Description: 
-- Request: `PUT /users/info/`
-- Response: 200
-- Example:
-```
-curl 
-```
-
-- Description: 
+- Description: Get user info
 - Request: `GET /users/info/`
 - Response: 200
+    - content-type: `application/json`
+    - body: object
+        -_id: user id
+        -firstName: (string) first name of user
+        -lastName: (string) last name of user
+        -email: (string) email of user
+        -facebookID: (string) facebook id of user if it is a facebook account
+- Response: 404
+    -body: User does not exists
+    -body: Facebook User does not exist
+- Response: 500
+    - body: error log
 - Example:
 ```
-curl 
+curl -X POST
+       -H "Content-Type: `application/json`"
+       -d {"username": "alice", "password": "password"}
+       http://localhost:3000/signin/
+curl -X GET
+       -H "Content-Type: `application/json`"
+       http://localhost:3000/users/info/
 ```
 
-- Description: 
-- Request: `POST /users/passCheck/`
+- Description: Update user info
+- Request: `PUT /users/info/`
+    - content-type: application/json
+    - body: object
+        - firstName: (string) new first name of user
+        - lastName: (string) new last name of user
+        - password: (string) new password of user
+        - email: (string) new email of user
 - Response: 200
+    -body: User has been updated
+- Response: 404
+    - body: User does not exists
+    - body: Facebook User does not exist
+- Response: 500
+    - body: error log
 - Example:
 ```
-curl 
+curl -X PUT
+       -H "Content-Type: `application/json`"
+       -d {"username": "alice", "firstName": "alice", "lastName":"alice", "email":"123@hotmail.com", "password":"newPass"}
+       http://localhost:3000/users/info/
+```
+
+- Description: Checks whether the password supplied is the current user's hashed password
+- Request: `POST /users/passCheck/`
+    - content-type: application/json
+    - body: object
+        password: (string) old password that user has entered
+- Response: 200
+    -body: boolean
+        -body: true
+        -body: false
+- Response: 404
+    - body: User does not exists
+    - body: Facebook User does not exists
+
+- Response: 500
+    - body: error log
+- Example:
+```
+curl -X POST
+       -H "Content-Type: `application/json`"
+       -d {"username": "alice", "password": "password"}
+       http://localhost:3000/signup/
+```curl -X POST
+       -H "Content-Type: `application/json`"
+       -d {"password": "password"}
+       http://localhost:3000/users/passCheck/
 ```
 
 - Description: Sign up as a new user
