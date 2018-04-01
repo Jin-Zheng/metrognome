@@ -2,6 +2,8 @@
 
 ## Title: Metro-Gnome
 
+https://www.metro-gnome.me
+
 ## Team Members
 - Jin Zheng
 - Dennis Tra
@@ -26,7 +28,7 @@
 
 ## Technology
 ### Frontend
-`Javascript, HTML, CSS`
+`Javascript, HTML, CSS, AngularJS`
 ### Backend
 `NodeJS, ExpressJS`
 ### Persistence

@@ -182,6 +182,7 @@ app.post('/file/', upload.single('file'), function(req, res, next){
 // Src: https://ciphertrick.com/2017/02/28/file-upload-with-nodejs-and-gridfs-mongodb/
 app.get('/file/:filename', function(req, res, next){
     gfs.files.find({filename: req.params.filename}).toArray(function(err, files){
+        if (err) return res.status(500).end(JSON.stringify(err));
         if(!files || files.length === 0){
             return res.status(404).json({
                 responseCode: 1,
@@ -198,6 +199,7 @@ app.get('/file/:filename', function(req, res, next){
 
 app.get('/file/', function(req, res, next){
      gfs.files.find({$or: [{'metadata.username': req.username}, {'metadata.username': null}]}).toArray(function(err, files){
+        if (err) return res.status(500).end(JSON.stringify(err));
         if(!files || files.length === 0){
             return res.status(404).json({
                 responseCode: 1,
