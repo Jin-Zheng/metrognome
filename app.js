@@ -399,7 +399,8 @@ app.post('/beat/',isAuthenticated,function(req,res,next){
 //get beat id by owner
 app.get('/beat/private/',isAuthenticated,function(req,res,next){
     var usersBeats = [];
-    db.collection('beats').find({username:req.username,facebookID:req.facebookID, publicBool:false}).toArray(function(err,result){
+    if (req.username) {
+    db.collection('beats').find({username:req.username, publicBool:false}).toArray(function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("No private beats found for user");
         else{
@@ -409,6 +410,18 @@ app.get('/beat/private/',isAuthenticated,function(req,res,next){
             return res.json(usersBeats);
         }
     });
+    } else if (req.facebookID) {
+        db.collection('beats').find({facebookID:req.facebookID, publicBool:false}).toArray(function(err,result){
+            if(err) return res.status(500).end(err);
+            if(result === null) return res.status(404).end("No private beats found for user");
+            else{
+                for(var i =0;i<result.length;i++){
+                    usersBeats.push([result[i]._id, result[i].title]);
+                }
+                return res.json(usersBeats);
+            }
+        });
+    }
 });
 
 //get all public beat
