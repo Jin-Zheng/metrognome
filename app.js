@@ -286,7 +286,7 @@ app.put('/users/info/',checkUserInfo, function(req, res, next){
 });
 
 // Check whether password is equal to user password
-app.post('/users/passCheck/', function(req, res, next){
+app.post('/users/passCheck/',isAuthenticated, function(req, res, next){
     var password = req.body.password;
     db.collection('users').findOne({_id: req.session.username}, function(err, user){
         if (err) return res.status(500).end(err);
@@ -427,7 +427,6 @@ app.get('/beat/private/',isAuthenticated,function(req,res,next){
 
 //get all public beat
 app.get('/beat/public/popular',isAuthenticated,function(req,res,next){
-    var allBeats = [];
     db.collection('beats').find({publicBool:true},{username:1,facebookID:1}).sort({upvotes:-1}).limit(24).toArray(function(err,result){
         if(err) return res.status(500).end(err);
         if(result === null) return res.status(404).end("No public beats found");
@@ -439,7 +438,7 @@ app.get('/beat/public/popular',isAuthenticated,function(req,res,next){
 });
 
 //get beat by id
-app.get('/beat/:id/',isAuthenticated,function(req,res,next){
+app.get('/beat/:id/',checkId,isAuthenticated,function(req,res,next){
     var ObjectId = require('mongodb').ObjectId;
     var id = req.params.id;
     var o_id = new ObjectId(id);
@@ -474,7 +473,7 @@ app.delete('/beat/:id/',checkId,isAuthenticated,function(req,res,next){
 });
 
 
-app.patch('/beat/upvote/:id/',isAuthenticated,function(req,res,next){
+app.patch('/beat/upvote/:id/',checkId,isAuthenticated,function(req,res,next){
     var ObjectId = require('mongodb').ObjectId;
     var id = req.params.id;
     var o_id = new ObjectId(id);
