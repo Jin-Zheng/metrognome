@@ -2,7 +2,11 @@
 
 ## Title: Metro-Gnome
 
+###URL
 https://www.metro-gnome.me
+
+###Demo
+https://youtu.be/XQr3eBBvc_8
 
 ## Team Members
 - Jin Zheng
