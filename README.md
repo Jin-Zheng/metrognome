@@ -1,5 +1,3 @@
-# CSCC09 Project Proposal
-
 ## Title: Metro-Gnome
 
 ###URL
